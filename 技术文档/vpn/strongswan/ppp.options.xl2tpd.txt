@@ -1,0 +1,16 @@
+require-mschap-v2
+ms-dns 202.106.0.20
+asyncmap 0
+auth
+crtscts
+lock
+hide-password
+modem
+debug
+name l2tpd
+proxyarp
+lcp-echo-interval 0
+lcp-echo-failure 0
+mtu 1400
+noccp
+connect-delay 5000

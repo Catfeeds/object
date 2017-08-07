@@ -1,0 +1,11 @@
+
+pvcreate /dev/xxx
+
+vgextend /dev/xxx
+
+pvmove -i 3 /old-pv  /new-pv
+
+vgreduce vg-name /old
+
+pvremove /dev/old
+

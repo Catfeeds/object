@@ -1,0 +1,41 @@
+
+####本机clone
+virsh list --all
+
+
+ORIGINAL_GUEST=centos-10-0-1-86
+NEW_NAME=centos-10-0-1-87
+virt-clone -o ${ORIGINAL_GUEST} -n ${NEW_NAME} \
+-f /data/kvm/hosts/${NEW_NAME}/${NEW_NAME}-sys.qcow2  \
+-f /data/kvm/hosts/${NEW_NAME}/${NEW_NAME}-data.qcow2
+
+
+virsh list --all
+
+
+#修改ip
+#注释UUID
+#关于mac HWADDR
+#grep "mac address" /etc/libvirt/qemu/newhost.xml
+#将ifcfg-eth0的mac 地址改成 新mac地址
+
+
+virt-edit -d ${NEW_NAME} /etc/sysconfig/network-scripts/ifcfg-eth0
+
+##新文件的mac地址改成新的mac,或直接将文件删除.
+virt-edit -d ${NEW_NAME} /etc/udev/rules.d/70-persistent-net.rules 
+
+
+#修改机器名
+virt-edit -d ${NEW_NAME} /etc/sysconfig/network
+
+virsh start ${NEW_NAME}
+
+
+##启动无误以后，创建快照
+virsh snapshot-create-as New_name
+
+
+
+
+

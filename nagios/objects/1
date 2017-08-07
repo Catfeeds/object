@@ -1,0 +1,483 @@
+define service{
+        name                            hosts_server           ; The name of this service template
+        use                             generic-service         ; Inherit default values from the generic-service definition
+        max_check_attempts              4                       ; Re-check the service up to 4 times in order to determine its final (hard) state
+        normal_check_interval           5                       ; Check the service every 5 minutes under normal conditions
+        retry_check_interval            1                       ; Re-check the service every minute until a hard state can be determined
+        register                        0                       ; DONT REGISTER THIS DEFINITION - ITS NOT A REAL SERVICE, JUST A TEMPLATE!
+        }
+define service {
+        name                    common
+        max_check_attempts      3
+        normal_check_interval   1
+        retry_check_interval    2
+        check_period            24x7
+        notification_interval   3600
+        notification_period     24x7
+        notification_options    w,u,c,r
+        contact_groups          mail,phone
+}
+define service { 
+        use                   common,srv-pnp
+        host_name             App101  
+        service_description   check-host-alive 
+        check_command         check-host-alive   
+}
+define service {
+        use                  common,srv-pnp
+        host_name            App101
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                   common,srv-pnp
+        host_name            App101
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                   common,srv-pnp
+        host_name             App102
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            App102
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            App102
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             App103
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            App103
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            App103
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             App104
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            App104
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            App104
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Balance09
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Balance09
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Balance09
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Balance09
+        service_description  check_nginx
+        check_command        check_nrpe!check_nginx!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Balance09
+        service_description  check_haproxy
+        check_command        check_nrpe!check_haproxy!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Cache07
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Cache07
+        service_description  check_squid
+        check_command check_nrpe!check_squid
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Cache07
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Cache07
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Dns93
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Dns93
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Dns93
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Dns93
+        check_command        check_dnscluster!122.11.53.66!www.ihaveu.com!122.11.53.93!
+        service_description  check_dnscluster
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Dns94
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Dns94
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Dns94
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Dns94
+        check_command        check_dnscluster!122.11.53.66!www.ihaveu.com!122.11.53.94!
+        service_description  check_dnscluster
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Gene230
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Gene230
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Gene230
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+#define service {
+#        use                  common,srv-pnp
+#        host_name            mysql
+#        service_description  check_mysql
+#        check_command        check_mysql!172.20.2.141!3306!nagdb!nagdb!
+#}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Mail71
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Mail71
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mail71
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Memcache121
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Memcache121
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Memcache121
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Mysql140
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql140
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql140
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql140
+        service_description  check_mysql_master
+        check_command        check_mysql_master!192.168.0.140!25562!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql140
+        service_description  check_mysql_salve1
+        check_command        check_mysql_slave1!192.168.0.140!25563!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql140
+        service_description  check_mysql_slave2
+        check_command        check_mysql_slave2!192.168.0.140!25564!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Mysql141
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql141
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql141
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql141
+        service_description  check_mysql_5147
+        check_command        check_mysql_master!192.168.0.141!5147!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql141
+        service_description  check_mysql_5148
+        check_command        check_mysql_master!192.168.0.141!5148!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Mysql142
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql142
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name           Mysql142
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Mysql142
+        service_description  check_mysql_5147
+        check_command        check_mysql_master!192.168.0.142!5147!nagios!jyyz0909!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Search160
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Search160
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Search160
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Standby220
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Standby220
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Standby220
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Standby221
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Standby221
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Standby221
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name             Static150
+        service_description   check-host-alive
+        check_command         check-host-alive
+}
+define service {
+        use                  common,srv-pnp
+        host_name            Static150
+        service_description  check_nrpe_disk
+        check_command        check_nrpe!check_disk!
+}
+
+define service {
+        use                  common,srv-pnp
+        host_name            Static150
+        service_description  check_nrpe_load
+        check_command        check_nrpe!check_load!
+}
+
+#define service {
+#        use                   srv-pnp
+#        host_name             Mail35
+#        service_description   check-host-alive
+#        check_command         check-host-alive
+#}
+#define service {
+#        use                  srv-pnp
+#        host_name            Mail35
+#        service_description  check_nrpe_disk
+#        check_command        check_nrpe!check_disk!
+#}
+
+#define service {
+#        use                  srv-pnp
+#        host_name            Mail35
+#        service_description  check_nrpe_load
+#        check_command        check_nrpe!check_load!
+#}

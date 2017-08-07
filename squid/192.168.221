@@ -1,0 +1,128 @@
+http_port 80 vhost accel defaultsite=192.168.0.150
+cache_peer 192.168.0.150 parent 80 0 no-query originserver
+#server_http11 on
+icp_port 0
+#dns_nameservers  192.168.200.202
+visible_hostname  	ihaveu-cache-01
+unique_hostname		ihaveu-cache-01
+cache_effective_user	squid
+cache_effective_group	squid
+cache_mgr chuzhuo@ihaveu.net
+
+############path#################
+#hosts_file /usr/local/squid/etc/hosts
+pid_filename /opt/squid/logs/squid.pid
+coredump_dir /opt/squid/core
+httpd_suppress_version_string on
+client_persistent_connections on
+server_persistent_connections off
+via off
+cache_vary on
+collapsed_forwarding on
+forwarded_for off
+client_db off
+reload_into_ims on
+retry_on_error on
+pipeline_prefetch on
+nonhierarchical_direct off
+memory_pools off
+prefer_direct on
+half_closed_clients off
+cache_vary on
+#########################################################
+negative_ttl 5 seconds
+#positive_dns_ttl 5 minutes
+#negative_dns_ttl 5 seconds
+#dns_timeout 30 seconds
+forward_timeout 1 minutes
+connect_timeout 40 seconds
+peer_connect_timeout 40 minutes
+read_timeout 5 minutes
+request_timeout 3 minutes
+persistent_request_timeout 30 seconds
+pconn_timeout 1 minute
+shutdown_lifetime 5 seconds
+# ACCESS CONTROLS
+########################################################
+acl all src 0.0.0.0/0.0.0.0
+#acl manager proto cache_object
+#acl localhost src 127.0.0.1/255.255.255.255
+#acl to_localhost dst 127.0.0.0/8
+#acl SSL_ports port 443
+#acl Safe_ports port 80      # http
+#acl Safe_ports port 21      # ftp
+#acl Safe_ports port 443     # https
+#acl Safe_ports port 70      # gopher
+#acl Safe_ports port 210     # wais
+#acl Safe_ports port 1025-65535  # unregistered ports
+#acl Safe_ports port 280     # http-mgmt
+#acl Safe_ports port 488     # gss-http
+#acl Safe_ports port 591     # filemaker
+#acl Safe_ports port 777     # multiling http
+#acl CONNECT method CONNECT
+acl AdminBoxes src 127.0.0.1 192.168.0.0/24
+acl Purge method PURGE
+
+acl cacti src 127.0.0.1
+acl SNMP snmp_community public
+
+acl nginx rep_header Server ^Nginx
+
+snmp_port 3401
+snmp_access allow SNMP cacti
+snmp_access deny all 
+
+broken_vary_encoding allow nginx
+http_access allow AdminBoxes Purge
+http_access deny Purge
+
+#http_access allow manager localhost
+#http_access allow manager
+#http_access deny !Safe_ports
+#http_access deny CONNECT !SSL_ports
+#http_access allow localhost
+http_access allow all
+
+#icp_access allow all
+
+#acl QUERY urlpath_regex cgi-bin \?
+#cache deny QUERY
+#######################################################
+cache_mem 8000 MB
+cache_dir aufs /opt/squid/cache/11 61440 32 256
+cache_dir aufs /opt/squid/cache/22 61440 32 256
+cache_dir aufs /opt/squid/cache/33 61440 32 256
+cache_dir aufs /opt/squid/cache/44 61440 32 256
+maximum_object_size_in_memory 2000 KB
+minimum_object_size 0 KB
+maximum_object_size 2 GB
+cache_swap_low 80
+cache_swap_high 90
+memory_replacement_policy lru
+cache_replacement_policy lru
+ipcache_size 10000
+quick_abort_min 20000 KB
+quick_abort_max 20000 KB
+quick_abort_pct 90
+read_ahead_gap 32 KB
+range_offset_limit 0 KB
+store_avg_object_size 100 KB
+request_header_max_size 10 KB
+
+
+logformat squidlog %ts.%03tu %6tr %>a %Ss/%03Hs %<st %rm %ru %un %Sh/%<A %mt HTTP/%rv "%{Referer}>h" "%{User-Agent}>h"
+logformat logsquid %ts.%03tu %6tr %>a %Ss/%03Hs %<st %rm %ru %un %Sh/%<A %mt HTTP/%rv "%{Referer}>h" "%{User-Agent}>h" %{Content-Length}<h "%{Content-Range}<h"  "%{X-Squid-Error}<h"
+access_log /opt/squid/logs/access.log squidlog
+cache_log /opt/squid/logs/cache.log
+cache_store_log none
+logfile_rotate 25
+
+#refresh_pattern -i http://i0\.ihaveu\.com\.cn/(.*)\.mp3$ 8640 90% 14400 reload-into-ims override-expire override-lastmod ignore-reload ignore-no-cache ignore-private
+#refresh_pattern -i http://i0\.ihaveu\.com/(.*)\.htm$ 1728 90% 2880 reload-into-ims override-expire override-lastmod ignore-reload ignore-no-cache ignore-private
+refresh_pattern -i http://i0\.ihaveu\.com/history/historyFrame\.html\? 1728 90% 2880 reload-into-ims override-expire override-lastmod ignore-reload ignore-no-cache ignore-private
+refresh_pattern -i \.(jpg|gif|bmp|png|html|shtml|htm)$ 43200 90% 43300 override-expire override-lastmod reload-into-ims ignore-reload ignore-no-cache ignore-private
+refresh_pattern -i \.(css|js)$ 120 90% 360 override-expire override-lastmod reload-into-ims ignore-reload ignore-no-cache ignore-private
+refresh_pattern -i \.(flv|zip|rar|mp3|exe|wma|swf)$ 43200 90%  43300 reload-into-ims  override-expire override-lastmod ignore-reload ignore-no-cache 
+refresh_pattern -i \.(bin|pdf|rtf|Z|gz|bz2|bz|tgz|cdf|tr|man|zip|cpio|gtar|rpm|rup|shar|tar|ustar|mp2|mpga|aif|aiff|asf|aifc|wav|ief|jpeg|jpe|tiff|tif|ras|txt|mpeg|mpg|mpe|mov|doc|xls|ppt|cab|kar|mid|midi|ra|ram|rm|sgml|sgm|so|spl|vcd|vrml|wbmp|wbxml|wmlc|wmlsc|wmls|xht|xhtml|ico)$  43200 90%  43300 reload-into-ims  override-expire override-lastmod ignore-reload ignore-no-cache
+refresh_pattern -i . 0  10%  0 override-expire override-lastmod reload-into-ims ignore-reload ignore-no-cache ignore-private
+

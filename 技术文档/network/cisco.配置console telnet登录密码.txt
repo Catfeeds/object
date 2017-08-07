@@ -1,0 +1,41 @@
+
+(config)#line vty 0 15
+Router(config-line)#login
+Router(config-line)#password Adwo@123
+
+
+
+
+#(config)# enable password XXX
+(config)# enable secret XXX
+
+
+
+(config)# line console 0
+(config-line)# login
+(config-line)# password 0 XXX
+#(config-line)# logging synchronous
+#(config-line)# exec-timeout 0 0
+
+#(config)# line aux 0
+#(config-line)# login
+#(config-line)# password 0 XXX
+
+
+(config)# line vty0 15
+(config-line)# login
+(config-line)# password 0 Adwo@123
+
+
+
+#copy running-config startup-config
+
+
+保存命令：
+在接口配置模式下使用
+do wr 或者是
+do copy running-config startup-config 
+
+在全局配置模式下使用不带do的命令.
+ 
+

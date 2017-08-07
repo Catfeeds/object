@@ -1,0 +1,1 @@
+curl -vvv 'http://112.91.147.37:9003/MWGate/wmgw.asmx/MongateCsSpSendSmsNew?userId=J02039&password=289292&iMobiCount=1&pszMobis=13146409618&pszMsg=testtesttest'

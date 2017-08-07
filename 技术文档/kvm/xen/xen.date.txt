@@ -1,0 +1,5 @@
+
+#系统使用独立时间
+
+sysctl xen.independent_wallclock = 1
+

@@ -1,0 +1,21 @@
+/data/nginx/logs/*.log {
+    daily
+    rotate 30
+    missingok
+    notifempty
+    compress
+    dateext
+    dateformat -%Y-%m-%d-%s
+    delaycompress
+    ifempty
+    maxage 30
+    create
+    #copytruncate
+    #nocopytruncate
+    sharedscripts
+    postrotate
+    if [ -f /data/nginx/logs/nginx.pid ]; then
+       kill -USR1 `cat /data/nginx/logs/nginx.pid`
+    fi
+    endscript
+}

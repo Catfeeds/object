@@ -1,0 +1,32 @@
+server {
+        listen                  80;
+        #use "default" parameter to directive this is default when using
+        #name based virtual hosts.
+        #listen                  88   default;
+        server_name              diamond.hncae.net i0.diamond.hncae.net;
+        #charset                 utf-8;
+        gzip                     on;
+        #gzip_types              text/html text/css text/js application/x-javascript  application/javascript text/javascript;
+        gzip_types               *;
+        #gzip_comp_level         3;
+        #gzip_min_length         10000;
+        #gzip_disable     "MSIE [1-6]\.";
+        root                     /data/www/diamond.hncae.net/ ;
+
+
+        location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
+                access_log              off;
+                log_not_found           off;
+                expires                 10m;
+                }
+        #error_page      404     /index.php ;
+        #error_page      403     /index.html ;
+
+        index  index.html index.htm index.php;
+        access_log              logs/access.diamond.hncae.net.log main;
+        #access_log              off;
+        log_not_found           off;
+
+
+
+}

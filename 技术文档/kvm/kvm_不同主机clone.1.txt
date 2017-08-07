@@ -1,0 +1,49 @@
+
+####本机clone
+virsh list --all
+
+virt-clone -o temp-90 -n tzbao-test-92 \
+-f /data/kvm/hosts/tzbao-test-92/tzbao-test-92-sys.img  \
+
+
+#-f /data/newhost/newhost-data.img
+
+virsh list --all
+
+
+#修改ip
+#注释UUID
+#关于mac HWADDR
+#grep "mac address" /etc/libvirt/qemu/newhost.xml
+#将ifcfg-eth0的mac 地址改成 新mac地址
+
+
+virt-edit -d NEW_NAME /etc/sysconfig/network-scripts/ifcfg-eth0
+
+#1.新文件的mac地址改成新的mac,
+#2.清空文件
+#3.直接将文件删除.
+virt-edit -d NEW_NAME /etc/udev/rules.d/70-persistent-net.rules 
+
+
+#修改机器名
+virt-edit -d NEW_NAME /etc/sysconfig/network
+
+##virsh start new_name
+
+
+复制 newhost.img到其它机器对应目录
+复制host.xml文件,到/etc/libvirt/qemu/ ,
+修改文件的相应目录,确保 newhost.img目录正确 .
+
+#add a host
+virsh define newhost.xml
+
+#delete a host
+virsh undefine newhost
+
+
+virsh start newhost
+
+
+

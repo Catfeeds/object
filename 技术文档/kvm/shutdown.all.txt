@@ -1,0 +1,7 @@
+vms=`virsh list --name`
+for vm in $vms
+do
+  echo "shutdown $vm"
+  virsh shutdown $vm
+done
+

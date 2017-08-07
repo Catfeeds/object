@@ -1,0 +1,18 @@
+server {
+        listen                  80  backlog=2048 default_server;
+        #rewrite ^ http://www.new1001.com/ permanent;
+        #access_log      off ;
+        access_log              logs/access.default.52.log main;
+
+        location / {
+            return 403 ;
+        }
+
+
+        location /ngx_status {
+            stub_status on;
+            access_log  off;
+        }
+
+
+}

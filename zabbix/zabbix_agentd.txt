@@ -1,0 +1,14 @@
+groupadd zabbix
+useradd -g zabbix zabbix
+mkdir /data/zabbix_log
+chown -R zabbix:zabbix /data/zabbix_log/
+
+tar xf zabbix-3.2.4.tar.gz
+cd zabbix-3.2.4
+./configure --prefix=/usr/local/zabbix/ --enable-agent
+make && make install 
+
+
+{ALERT.SENDTO}
+{ALERT.SUBJECT}
+{ALERT.MESSAGE}

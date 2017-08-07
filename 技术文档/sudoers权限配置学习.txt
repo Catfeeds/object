@@ -1,0 +1,95 @@
+sudoers权限配置与学习
+发表于 2013/07/26 由 yong.yang	
+1.如何修改sudoers文件
+
+sudoers文件需要root权限才能修改。
+如果我们通过非root用户编辑/etc/sudoers的时候，发生语法错误会导致无法使用sudo
+
+sudo
+>>> /etc/sudoers: syntax error near line 91 <<<
+sudo: parse error in /etc/sudoers near line 91
+sudo: no valid sudoers sources found, quitting
+
+如果你没有root帐号的权限，你就无法编辑/etc/sudoers。
+推荐使用visudo，可以对/etc/sudoers文件进行语法检测。
+
+visudo
+输入一些错误
+%wheel  ALL=(ALL)       NOPASSWD: ALL cuowu
+>>> /etc/sudoers: syntax error near line 92 <<<
+What now?
+Options are:
+(e)dit sudoers file again
+e(x)it without saving changes to sudoers file
+(Q)uit and save changes to sudoers file (DANGER!)
+What now?
+
+提示我们语法有错误，这样我们就能继续编辑了,而不会出现直接退出但是无法编辑的尴尬了。
+默认的时候visudo调用vi，我们可以修改其变量，使用vim达到语法高亮的要求。
+
+在/etc/profile 中添加
+export EDITOR="/usr/bin/vim -p -X"
+
+2.配置文件的基本语法
+
+user_list host_list = [(runas_list)] command_list
+root                          ALL=(ALL)                 ALL
+root用户允许     所有主机     以所有身份     运行所有命令
+参数含义：
+user_list : 适用的用户,可以是用户名、组(以%开头)、用户别名(User_Alias)
+
+host_list : 适用的主机(多主机使用同一配置文件时才生效),可以是一个或多个主机名、ip地址、主机别名(Host_Alias)
+
+runas_list : 使用那些用户的身份执行(sudo -u 选项)，可以是用户名、组(以%开头)、runas别名(Runad_Alias)
+
+command_list : 使用的命令,是命令名称、存放命令的目录(必须以/结尾)、命令别名(Cmd_Alias)
+
+举例：
+
+user1 ALL=(ALL)  ALL
+%group_user1 ALL=(ALL)   ALL, !/usr/bin/vim
+%group_user2 ALL=(root)  /sbin/ifconfig, /usr/bin/vim
+
+user1用户，拥有所有命令得权限
+group_user1 用户组，拥有除了vim以外得所有命令得权限
+group_user2 用户组，只能以root身份运行ifconfig 和vim
+3.别名设置
+语法：
+
+alias_type     alias_name = alias_list
+别名类型       类型名称(须大写)          列表
+别名类型分类：
+User_Alias : 用户名和组名
+Runas_Alias : 用户列表
+Cmnd_Alias : 命令、目录
+
+举例：
+User_Alias IT = user1, user2, %group_user
+Runas_Alias IT_USER = user1, user2
+Cmnd_Alias NETWORK = /sbin/ifconfig, /sbin/ifdown, /sbin/ifup, /sbin/route
+IT ALL=(IT_USER) NOPASSWD: NETWORK
+
+
+[user1@bogon ~]$ sudo -u user1 ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:0C:29:79:3E:F1
+inet addr:192.168.10.99  Bcast:192.168.10.255  Mask:255.255.255.0
+UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+RX packets:1603970 errors:0 dropped:0 overruns:0 frame:0
+TX packets:151556 errors:0 dropped:0 overruns:0 carrier:0
+collisions:0 txqueuelen:1000
+RX bytes:339695407 (323.9 MiB)  TX bytes:16914546 (16.1 MiB)
+lo        Link encap:Local Loopback
+inet addr:127.0.0.1  Mask:255.0.0.0
+UP LOOPBACK RUNNING  MTU:16436  Metric:1
+RX packets:238 errors:0 dropped:0 overruns:0 frame:0
+TX packets:238 errors:0 dropped:0 overruns:0 carrier:0
+collisions:0 txqueuelen:0
+RX bytes:38562 (37.6 KiB)  TX bytes:38562 (37.6 KiB)
+[user1@bogon ~]$ sudo -u user1 vim a
+Sorry, user user1 is not allowed to execute '/usr/bin/vim a' as user1 on bogon.
+
+解释：
+
+user1、user2、group_user组的用户，只允许使用user1和user2的身份去执行NETWORK中的命令
+在日常使用中，推荐使用Cmnd_Alias  CMND = /sbin/ifconfig,  /usr/bin/vim
+规定用户可以用哪些命令

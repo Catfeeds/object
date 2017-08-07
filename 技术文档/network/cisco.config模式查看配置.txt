@@ -1,0 +1,4 @@
+
+
+show run interface gigabitEthernet 0/0 
+

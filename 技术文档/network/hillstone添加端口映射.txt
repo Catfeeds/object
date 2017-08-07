@@ -1,0 +1,20 @@
+
+
+SG-6000# configure 
+
+service "git-151-22"
+tcp dst-port 15122
+exit
+
+
+ip vrouter "trust-vr"
+dnatrule  from "Any" to "42.62.5.229" service "git-151-22" trans-to "192.168.0.151" port 22  
+
+##如果是229的映射可以不加
+rule
+  action permit
+  src-zone "untrust"
+  dst-zone "trust"
+  src-addr "Any"
+  dst-ip 42.62.5.229/32
+  service "Any"

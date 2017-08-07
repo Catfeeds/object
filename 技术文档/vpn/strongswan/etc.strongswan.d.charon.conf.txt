@@ -1,0 +1,9 @@
+
+
+accept_unencrypted_mainmode_messages = yes
+
+
+#×èÖ¹ipsec·¢ËÍkeepalive
+keep_alive = 0s
+
+

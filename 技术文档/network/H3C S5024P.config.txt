@@ -1,0 +1,21 @@
+
+
+super password jyyz0909
+
+interface vlan-interface1
+ ip address 192.168.0.1 255.255.255.0
+ 
+ 
+ user-interface vty 0
+ set authentication password ihaveu
+ 
+ 
+ 
+ 
+ 
+ ##############
+ 
+
+snmp-agent community read public
+snmp-agent community write ihaveupri
+

@@ -1,0 +1,41 @@
+
+ mediawiki 管理员/行政员设置
+标签： wikimediawiki
+2014-05-14 22:34 3169人阅读 评论(0) 收藏 举报
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+
+目录(?)[+]
+mediawiki行政员找回
+mediawiki 1.22.6默认安装完成后，无管理员/行政员，默认都是user组成员。这样不便于wiki系统维护。
+
+注： 默认情况下，行政员组(bureaucrat) 成员 具有设置所有用户组权限的能力
+                                 管理员组(sysop)成员  具有很有系统维护的能力
+
+
+
+当mediawiki 中 行政员组 成员全部丢失后，可以通过直接修改数据库完成权限找回:
+
+连接到wiki数据库:
+
+MySQL> use my_wiki
+
+查询当前用户列表:
+
+mysql> select * from user;
+
+直接将想要设置成行政员的用户插入到权限组表:
+
+mysql> insert user_groups (ug_user, ug_group)  values (1, 'bureaucrat');
+
+
+设置完成～用user_id 为1的用户 再次登录wiki页面，则该用户已变成行政员，他可以设置任何用户的权限组。该方法也可以直接设置用户为管理员('sysop')。
+
+
+mediawiki密码遗失重设
+进入到wiki安装目录下，进入目录maintenance/，里面有很多wiki运维脚本。密码修改脚本及修改命令如下:
+
+php changePassword.php --user --new passowrd
+
+#添加用户
+php createAndPromote.php --bureaucrat --globals user pass
+

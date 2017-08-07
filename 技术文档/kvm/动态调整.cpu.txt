@@ -1,0 +1,13 @@
+
+#调整最大cpu数
+virsh  setvcpus --domain test-97  --maximum 32 --config
+
+
+#调整cpu个数
+virsh  setvcpus --domain test-124 --count 8 --config --live
+
+
+
+
+
+

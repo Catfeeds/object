@@ -1,0 +1,124 @@
+使用haproxy做mysql负载均衡
+	
+
+1.探测脚本（网上找的）
+vim sdb1_repl.sh，sdb2_repl.sh相同
+
+#!/bin/bash
+MYSQL_HOST=”192.168.0.1″
+MYSQL_PORT=”3306″
+MYSQL_USERNAME=”xxx”
+MYSQL_PASSWORD=”xxx”
+
+mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e “show slave status\G;” > /tmp/check_sdb1_rep.txt
+iostat=`grep “Slave_IO_Running” /tmp/check_sdb1_rep.txt  |awk ‘{print $2}’`
+sqlstat=`grep “Slave_SQL_Running” /tmp/check_sdb1_rep.txt |sed -n 1p|awk ‘{print $2}’`
+#echo iostat:$iostat and sqlstat:$sqlstat
+if [ "$iostat" = "Yes" ] && [ "$sqlstat" = "Yes" ];
+then
+# mysql is fine, return http 200
+/bin/echo “HTTP/1.1 200 OK\r\n”
+/bin/echo “Content-Type: Content-Type: text/plain\r\n”
+/bin/echo “\r\n”
+/bin/echo “MySQL ($MYSQL_HOST:$MYSQL_PORT) replication is running.\r\n”
+/bin/echo “\r\n”
+else
+# mysql is down, return http 503
+/bin/echo “HTTP/1.1 503 Service Unavailable\r\n”
+/bin/echo “Content-Type: Content-Type: text/plain\r\n”
+/bin/echo “\r\n”
+/bin/echo “MySQL ($MYSQL_HOST:$MYSQL_PORT) replication  is *down*.\r\n”
+/bin/echo “\r\n”
+fi
+
+2.修改/etc/services，添加如下2行：
+sdb1_repl       12932/tcp
+sdb2_repl       12933/tcp
+
+3.安装xinetd启动2个端口
+yum install xinetd
+
+cd /etc/xinetd.d/
+
+vim sdb1_repl
+service sdb1_repl
+{
+flags           = REUSE
+socket_type     = stream
+port            = 12932
+wait            = no
+user            = root
+server          = /opt/shell/sdb1_repl.sh
+log_on_failure  += USERID
+disable         = no
+only_from       = 127.0.0.1 192.168.0.0/24 # recommended to put the IPs that need
+# to connect exclusively (security purposes)
+}
+
+vim sdb2_repl
+service sdb2_repl
+{
+flags           = REUSE
+socket_type     = stream
+port            = 12933
+wait            = no
+user            = root
+server          = /opt/shell/sdb2_repl.sh
+log_on_failure  += USERID
+disable         = no
+only_from       = 127.0.0.1 192.168.0.0/24 # recommended to put the IPs that need
+# to connect exclusively (security purposes)
+}
+
+/etc/init.d/xinetd start
+
+测试，如下正常：telnet 127.0.0.1 12932
+Trying 127.0.0.1…
+Connected to bj-App106 (127.0.0.1).
+Escape character is ‘^]’.
+HTTP/1.1 200 OK\r\n
+Content-Type: Content-Type: text/plain\r\n
+\r\n
+MySQL (192.168.0.146:12835) replication is running.\r\n
+\r\n
+Connection closed by foreign host.
+
+3.安装haproxy
+yum install haproxy
+vim /etc/haproxy/haproxy.cfg
+
+global
+maxconn 60000
+spread-checks 5
+daemon
+defaults
+log global
+mode http
+balance roundrobin
+maxconn 500
+option abortonclose
+retries 3
+option redispatch
+timeout client 120000
+timeout connect 120000
+timeout server 120000
+timeout check 2000
+option  dontlognull
+
+listen mysql :3306
+mode tcp
+option  tcplog
+option  tcpka
+option httpchk OPTIONS * HTTP/1.1\r\nHost:\ www
+server sdb_1 192.168.0.1:3306 check addr 127.0.0.1 port 12932 inter 2s rise 2 fall 2
+server sdb_2 192.168.0.2:3306 check addr 127.0.0.1 port 12933 inter 2s rise 2 fall 2
+
+addr 127.0.0.1重要，不写将出现探测失败，当然如果服务都在本机就不用写了。
+
+4.生成haproxy日志
+vim /etc/syslog.conf
+local2.*                        /var/log/haproxy.log
+vim /etc/sysconfig/syslog
+修改SYSLOGD_OPTIONS=”-m 0″为SYSLOGD_OPTIONS=”-r -m 0″
+重启syslog /etc/init.d/xinetd restart
+问题:1.mysql连接断开后才出现一条haporxy日志。不解。

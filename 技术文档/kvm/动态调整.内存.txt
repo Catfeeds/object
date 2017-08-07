@@ -1,0 +1,10 @@
+
+##最大内存，只能在关机时调整(单位:KB)
+virsh setmaxmem --domain test-97 --size 32G --config
+
+##调整运行时内存(单位:KB)
+virsh setmem --domain test-97 --size 16G --config --live
+
+
+
+

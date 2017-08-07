@@ -1,0 +1,19 @@
+
+需要在umount状态下进行调整
+
+增加硬盘空间以后:
+fdisk -l
+
+e2fsck -f /dev/xvdbfdisk
+
+resize2fs  /dev/xvdb
+
+mount /dev/xvdb /mnt
+
+
+#缩小硬盘空间
+e2fsck -f /dev/xvdbfdisk
+resize2fs -M  /dev/xvdb
+mount /dev/xvdb /mnt
+
+

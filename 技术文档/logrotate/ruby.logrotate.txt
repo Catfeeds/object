@@ -1,0 +1,15 @@
+/data/www/stock_game/current/log/*.log {
+    daily
+    rotate 7
+    #maxage 7
+    missingok
+    notifempty
+    #compress
+    dateext
+    dateformat -%Y-%m-%d-%s
+    delaycompress
+    ifempty
+    #create
+    copytruncate
+    #nocopytruncate
+}

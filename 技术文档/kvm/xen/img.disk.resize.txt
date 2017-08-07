@@ -1,0 +1,7 @@
+
+
+resize2fs -f xxx.img 10G
+
+e2fsck -f /aa/old.img
+
+resize2fs -f xxx.img 10G

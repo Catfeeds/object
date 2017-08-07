@@ -1,0 +1,9 @@
+ yum install python-setuptools m2crypto supervisor
+ 1003  easy_install pip
+ 1004  pip install shadowsocks
+ 1005  mkdir -p /etc/shadowsocks
+ 1006  vi /etc/shadowsocks/config.json
+ 1007  ssserver -c /etc/shadowsocks/config.json -d restart
+ 1008  ls
+ 1009* iptables -I INPUT -p tcp --dport 9999 -j ACCEPT
+ 1010  iptables -I INPUT -p udp --dport 9999 -j ACCEPT

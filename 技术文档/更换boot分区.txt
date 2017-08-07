@@ -1,0 +1,18 @@
+
+
+rsync -av /oldboot  /newboot
+
+mount /newboot /boot
+
+
+grub-install /new-device
+
+
+###如果硬盘没有单独的给/boot预留的分区
+grub-install --root-directory=boot-dir  /new-device
+
+#用新的硬盘启动
+
+
+
+

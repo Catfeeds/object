@@ -1,0 +1,9 @@
+
+172.20.2.161
+
+cd /opt/wiki/maintenance
+
+
+php createAndPromote.php --bureaucrat --globals user pass
+
+

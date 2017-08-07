@@ -1,0 +1,1 @@
+virt-install --name vm1 --boot network,cdrom,menu=on --ram 1024 --vcpus=2 --accelerate --cdrom=/datapool/iso/CentOS-7.0-1406-x86_64-DVD.iso --disk path=/datapool/img/linux/CentOS7.qcow2,format=qcow2,bus=virtio --bridge=br0,model=virtio --mac=1e:0b:da:72:7e:03 --vnc --vncport=5999 --vnclisten=0.0.0.0

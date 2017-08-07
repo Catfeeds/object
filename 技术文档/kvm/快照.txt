@@ -1,0 +1,16 @@
+为虚拟机centos创建快照，快照名称为centos_install_ftp
+snapshot-create-as centos centos_install_ftp
+
+查看虚拟机centos所有的快照
+
+snapshot-list centos 
+
+查看虚拟机centos快照centos_uninstall_ftp详细信息
+
+snapshot-info centos centos_uninstall_ftp
+
+恢复快照：
+snapshot-revert centos centos_uninstall_ftp
+
+删除快照：
+snapshot-delete centos centos_uninstall_ftp

@@ -1,0 +1,9 @@
+
+yum -y install libpng-devel freetype-devel libjpeg-turbo-devel  
+
+./configure 
+
+#完成以后核对支持的模块信息
+
+make 
+make install

@@ -1,0 +1,13 @@
+
+#1 设置en密码
+(config)# enable secret XXX
+
+
+
+#2、配置用户名、密码
+username 用户名 privilege 优先级（配置为15） password 密码
+#3、进入用户接口模式，配置登陆方式为local
+ine vty 0 15
+login local
+transport  input telnet ssh 
+

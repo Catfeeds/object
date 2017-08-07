@@ -1,0 +1,6 @@
+
+echo '0 0 * * * root /usr/sbin/logrotate -f /data/logrotate/*' >> /etc/crontab
+
+
+
+

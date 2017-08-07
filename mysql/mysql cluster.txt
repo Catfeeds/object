@@ -1,0 +1,557 @@
+CentOS 6.3 Linux MySQL Cluster
+发表于 2013/07/23 由 ming.li	
+MySQL Cluster简介
+
+MySQL Cluster 是MySQL适合于分布式计算环境的高实用、高冗余版本。它采用了NDB Cluster 存储引擎，允许在1个 Cluster 中运行多个MySQL服务器。在MyQL 5.0及以上的二进制版本中、以及与最新的Linux版本兼容的RPM中提供了该存储引擎。（注意，要想获得MySQL Cluster 的功能，必须安装 mysql-server 和 mysql-max RPM）。
+
+目前能够运行MySQL Cluster 的操作系统有Linux、Mac OS X和Solaris（一些用户通报成功地在FreeBSD上运行了MySQL Cluster ，但MySQL AB公司尚未正式支持该特性）。
+
+一、MySQL Cluster概述
+
+MySQL Cluster 是一种技术，该技术允许在无共享的系统中部署“内存中”数据库的 Cluster 。通过无共享体系结构，系统能够使用廉价的硬件，而且对软硬件无特殊要求。此外，由于每个组件有自己的内存和磁盘，不存在单点故障。
+
+MySQL Cluster 由一组计算机构成，每台计算机上均运行着多种进程，包括MySQL服务器，NDB Cluster 的数据节点，管理服务器，以及（可能）专门的数据访问程序。关于 Cluster 中这些组件的关系，请参下图：
+
+所有的这些节点构成一个完成的MySQL集群体系。数据保存在“NDB存储服务器”的存储引擎中，表（结构）则保存在“MySQL服务器”中。应用程序通过“MySQL服务器”访问这些数据表，集群管理服务器通过管理工具(ndb_mgmd)来管理“NDB存储服务器”。
+
+通过将MySQL Cluster 引入开放源码世界，MySQL为所有需要它的人员提供了具有高可用性、高性能和可缩放性的 Cluster 数据管理。
+
+二、MySQL Cluster 基本概念
+
+“NDB” 是一种“内存中”的存储引擎，它具有可用性高和数据一致性好的特点。
+
+MySQL Cluster 能够使用多种故障切换和负载平衡选项配置NDB存储引擎，但在 Cluster 级别上的存储引擎上做这个最简单。MySQL Cluster的NDB存储引擎包含完整的数据集，仅取决于 Cluster本身内的其他数据。
+
+目前，MySQL Cluster的 Cluster部分可独立于MySQL服务器进行配置。在MySQL Cluster中， Cluster的每个部分被视为1个节点。
+
+管理(MGM)节点：这类节点的作用是管理MySQL Cluster内的其他节点，如提供配置数据、启动并停止节点、运行备份等。由于这类节点负责管理其他节点的配置，应在启动其他节点之前首先启动这类节点。MGM节点是用命令“ndb_mgmd”启动的。
+
+数据节点：这类节点用于保存 Cluster的数据。数据节点的数目与副本的数目相关，是片段的倍数。例如，对于两个副本，每个副本有两个片段，那么就有4个数据节点。不过没有必要设置多个副本。数据节点是用命令“ndbd”启动的。
+
+SQL节点：这是用来访问 Cluster数据的节点。对于MySQL Cluster，客户端节点是使用NDB Cluster存储引擎的传统MySQL服务器。通常，SQL节点是使用命令“mysqld –ndbcluster”启动的，或将“ndbcluster”添加到“my.cnf”后使用“mysqld”启动。
+
+注释：在很多情况下，术语“节点”用于指计算机，但在讨论MySQL Cluster时，它表示的是进程。在单台计算机上可以有任意数目的节点，为此，我们采用术语“ Cluster主机”。
+
+管理服务器(MGM节点)负责管理 Cluster配置文件和 Cluster日志。 Cluster中的每个节点从管理服务器检索配置数据，并请求确定管理服务器所在位置的方式。当数据节点内出现新的事件时，节点将关于这类事件的信息传输 到管理服务器，然后，将这类信息写入 Cluster日志。
+
+此外，可以有任意数目的 Cluster客户端进程或应用程序。它们分为两种类型：
+
+标准MySQL客户端：对于MySQL Cluster，它们与标准的（非 Cluster类）MySQL没有区别。换句话讲，能够从用PHP、Perl、C、C++、Java、Python、Ruby等编写的现有MySQL应用程序访问MySQL Cluster。
+
+管理客户端：这类客户端与管理服务器相连，并提供了启动和停止节点、启动和停止消息跟踪（仅调试版本）、显示节点版本和状态、启动和停止备份等的命令。
+MySQL Cluster安装
+1、下载地址
+
+http://ftp.nchu.edu.tw/Unix/Database/MySQL/Downloads/MySQL-Cluster-7.2/
+
+选择GENERIC LINUX版本, mysql-cluster-gpl-7.2.8-linux2.6-x86_64.tar.gz
+2、部署情况
+管理节点 	192.168.10.17
+ndb节点 	192.168.10.16
+ndb节点 	192.168.10.217
+SQL节点 	192.168.10.218
+SQL节点 	192.168.10.220
+
+关闭所有机器的Selinux和iptables服务
+2.1  配置管理节点
+
+[root@centos5 ~]# yum install –y cmake autoconf gcc make ncurses-devel bison libaio
+
+[root@centos5 ~]# groupadd mysql
+
+[root@centos5 ~]# useradd -g mysql mysql
+
+[root@centos5 ~]# mkdir /opt/mysql
+
+[root@centos5 ~]# tar zxf mysql-cluster-gpl-7.2.8-linux2.6-x86_64.tar.gz
+
+[root@centos5 ~]# mv mysql-cluster-gpl-7.2.8-linux2.6-x86_64 /usr/local/mysql
+
+[root@centos5 ~]# chown –R mysql.mysql /usr/local/mysql
+
+[root@centos5 ~]# cd /usr/local/mysql;./scprits/mysqld_install_db –user=mysql
+
+[root@centos5 ~]# mkdir /var/lib/mysql-cluster
+
+拷贝ndb_mgm*到/usr/bin
+
+[root@centos5 ~]# cp /usr/local/mysql/bin/ndb_mgm* /usr/bin
+
+配置ndb_mgmd配置文件
+
+[root@centos5 mysql]# cat /var/lib/mysql-cluster/config.ini
+
+[NDBD DEFAULT]
+
+NoOfReplicas=2
+
+DataMemory=100M
+
+IndexMemory=10M
+
+BackupMemory=20M
+
+#此值按数据库大小设置，官方给出了公式
+
+#(内存) 数据大小 *副本 * 1.25 = 数据库内存总需求
+
+#比例:50 GB * 2 * 1.25 = 125 GB
+
+#(数据大小 *副本 * 1.25)/节点数 = 每个节点的内存大小
+
+#实例 :( 2 GB * 2 * 1.25)/4 = 1.25 GB
+
+#此值设置为1的时候，ndb将不会把数据写入磁盘（意思就是shutdown后数据库就没了）
+
+Diskless=0
+
+#速度快，你可以改为1试试，具体含义参考mysql官方文档
+
+ODirect=0
+
+[MGM DEFAULT]
+
+PortNumber=1186         #mgmd 端口
+
+[NDB_MGMD]
+
+Nodeid=1
+
+HostName=192.168.10.17
+
+DataDir=/var/lib/mysql-cluster    #管理节点数据（日志）目录
+
+ArbitrationRank:1
+
+[NDBD]              #node节点设置
+
+Nodeid=2
+
+HostName=192.168.10.216
+
+DataDir=/opt/mysql-cluster          #node节点目录
+
+[NDBD]
+
+Nodeid=3
+
+HostName=192.168.10.216
+
+DataDir=/opt/mysql-cluster
+
+[MYSQLD]
+
+Nodeid=4
+
+HostName=192.168.10.218
+
+[MYSQLD]
+
+Nodeid=5
+
+HostName=192.168.10.220
+
+[MYSQLD]   #留个空的以扩展使用，否则出现Failed to allocate nodeid No Free node id found ndbd(NDB)
+
+注：配置时， []右边的注释不要加上，否则系统不认。
+
+[NDBD DEFAULT]：表示每个数据节点的默认配置在每个节点的[NDBD]中不用再写这些选项，只能有一个。
+
+[NDB_MGMD]：表示管理节点的配置，只有一个。
+
+[NDBD]：表示每个数据节点的配置，可以有多个。
+
+[MYSQLD]：表示SQL节点的配置，可以有多个，分别写上不同SQL节点的IP地址。
+
+启动cluster 管理节点
+
+[root@centos5 ~]# ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+
+关闭cluster
+
+[root@centos5 ~]# ndb_mgm –e shutdown
+
+说明：
+
+1). /usr/local/mysql/bin/ndb_mgmd  – ndb_mgmd守护进程
+
+2). /usr/local/mysql/bin/ndb_mgm  -  cluster管理命令
+
+3). /var/lib/mysql-cluster – 创建目录用于存储管理节点数据。
+2.2. 安装NDBD 节点
+
+ndb节点1：192.168.10.216
+
+ndb节点2：192.168.10.217
+
+[root@centos1 ~]#yum install libaio -y
+
+[root@centos1 ~]# groupadd mysql
+
+[root@centos1 ~]# useradd mysql -g mysql
+
+[root@centos1 ~]# tar zxf mysql-cluster-gpl-7.2.8-linux2.6-x86_64.tar.gz
+
+[root@centos1 ~]# mv mysql-cluster-gpl-7.2.8-linux2.6-x86_64 /usr/local/mysql
+
+[root@centos1 ~]# chown -R mysql.mysql /usr/local/mysql
+
+[root@centos1 ~]# cd /usr/local/mysql
+
+[root@centos1 mysql]# mkdir /opt/mysql-cluster;./scripts/mysql_install_db –user=mysql –datadir=/opt/mysql-cluster
+
+[root@centos1 mysql]# chown -R mysql.mysql /opt/mysql-cluster/
+
+[root@centos1 mysql]# cp support-files/mysql.server /etc/init.d/mysqld
+
+[root@centos1 mysql]# chmod +x /etc/init.d/mysqld
+
+[root@centos1 mysql]# cp support-files/my-medium.cnf /etc/my.cnf
+
+对数据节点配置 /etc/my.cnf
+
+[MYSQLD]
+
+ndbcluster                    #运行NDB存储引擎
+
+ndb-connectstring=192.168.10.17
+
+[MYSQL_CLUSTER]
+
+ndb-connectstring=192.168.10.17   #管理节点
+
+[NDB_MGM]
+
+connect-string=192.168.10.17
+
+NDB节点启动
+
+启动ndb节点的时候，管理服务器必须开启1186，3306端口。
+
+注意：至少在第一次启动或者备份/恢复或者配置变化后重启时，才加—initial
+
+第一次启动如下：
+
+[root@centos1 mysql]# /usr/local/mysql/bin/ndbd –initial
+
+2013-07-16 16:52:56 [ndbd] INFO     — Angel connected to ’192.168.10.17:1186′
+
+2013-07-16 16:52:56 [ndbd] INFO     — Angel allocated nodeid: 2
+
+正常启动方式：
+
+/usr/local/mysql/bin/ndbd
+
+添加完NDB node 查看
+
+[root@centos5 ~]# ndb_mgm
+
+– NDB Cluster — Management Client –
+
+ndb_mgm> show
+
+Connected to Management Server at: localhost:1186
+
+Cluster Configuration
+
+———————
+
+[ndbd(NDB)]      2 node(s)
+
+id=2  @192.168.10.217  (mysql-5.5.27 ndb-7.2.8, Nodegroup: 0)
+
+id=3  @192.168.10.216  (mysql-5.5.27 ndb-7.2.8, Nodegroup: 0, Master)
+
+[ndb_mgmd(MGM)]    1 node(s)
+
+id=1  @192.168.10.17  (mysql-5.5.27 ndb-7.2.8)
+
+[mysqld(API)]    2 node(s)
+
+id=50 (not connected, accepting connect from 192.168.10.218)
+
+id=51 (not connected, accepting connect from 192.168.10.220)
+
+1) /usr/local/mysql/ndbd – ndb 守护启动
+
+2) /etc/my.cnf –  配置连接到ndb的文件
+3.3. 安装mysql 节点
+
+SQL节点1：192.168.10.218
+
+SQL节点2：192.168.10.220
+
+SQL 节点和存储节点(NDB节点)安装相同，都执行以下操作；
+
+[root@centos3 ~]# mkdir /opt/mysql
+
+[root@centos3 ~]# groupadd mysql
+
+[root@centos3 ~]# useradd -g mysql mysql
+
+[root@centos3 ~]# mv mysql-cluster-gpl-7.2.8-linux2.6-x86_64 /usr/local/mysql
+
+[root@centos3 ~]# chown mysql.mysql -R /usr/local/mysql
+
+[root@centos3 ~]# cd /usr/local/mysql
+
+[root@centos3 mysql]# ./scripts/mysql_install_db –user=mysql –datadir=/opt/mysql
+
+[root@centos3 mysql]# cp support-files/my-medium.cnf /etc/my.cnf
+
+[root@centos3 mysql]# /usr/local/mysql/bin/mysqld_safe –defaults-file=/etc/my.cnf –user=mysql&
+
+现在，启动完mysql以后，sql 节点已经添加到Cluseter管理节点
+
+登录到ndb_mgmd上查看
+
+ndb_mgm> show
+
+Connected to Management Server at: localhost:1186
+
+Cluster Configuration
+
+———————
+
+[ndbd(NDB)]      2 node(s)
+
+id=2  @192.168.10.217  (mysql-5.5.27 ndb-7.2.8, Nodegroup: 0)
+
+id=3  @192.168.10.216  (mysql-5.5.27 ndb-7.2.8, Nodegroup: 0, Master)
+
+[ndb_mgmd(MGM)]    1 node(s)
+
+id=1  @192.168.10.17  (mysql-5.5.27 ndb-7.2.8)
+
+[mysqld(API)]    2 node(s)
+
+id=50          @192.168.10.218  (mysql-5.5.27 ndb-7.2.8)
+
+id=51          @192.168.10.220  (mysql-5.5.27 ndb-7.2.8)
+
+或者使用
+
+[root@centos5 ~]# ndb_mgm -e “all status”
+
+Connected to Management Server at: localhost:1186
+
+Node 2: started (mysql-5.5.27 ndb-7.2.8)
+
+Node 3: started (mysql-5.5.27 ndb-7.2.8)
+
+注：
+
+    在建表的时候一定要用ENGINE=NDB或ENGINE=NDBCLUSTER指定使用NDB集群存储引擎，或用ALTER TABLE选项更改表的存储引擎。
+    NDB表必须有一个主键，因此创建表的时候必须定义主键，否则NDB存储引擎将自动生成隐含的主键。
+    Sql节点的用户权限表仍然采用MYISAM存储引擎保存的，所以在一个Sql节点创建的MySql用户只能访问这个节点，如果要用同样的用户访问别的Sql节点，需要在对应的Sql节点追加用户。虽然在MySql Cluster7.2版本开始提供了”用户权限共享”。
+
+3.4  数据同步性试
+
+在一个数据节点上进行相关数据库的创建，然后到另外一个数据节点上看看数据是否同步。
+
+第一步：SQL节点（192.168.10.218）上增加数据：
+
+mysql> show databases;
+
++——————–+
+
+| Database           |
+
++——————–+
+
+| information_schema |
+
+| mysql              |
+
+| ndbinfo            |
+
+| performance_schema |
+
+| test               |
+
++——————–+
+
+5 rows in set (0.01 sec)
+
+mysql> create database ndbtest;
+
+Query OK, 1 row affected (0.11 sec)
+
+mysql> show create database ndbtest;
+
++———-+——————————————————————–+
+
+| Database | Create Database                                                    |
+
++———-+——————————————————————–+
+
+| ndbtest  | CREATE DATABASE `ndbtest` /*!40100 DEFAULT CHARACTER SET latin1 */ |
+
++———-+——————————————————————–+
+
+1 row in set (0.00 sec)
+
+mysql> use ndbtest;
+
+Database changed
+
+mysql> create table ndb_test (id int not null,name char(64)) engine=ndb;
+
+Query OK, 0 rows affected (0.23 sec)
+
+mysql> SHOW CREATE TABLE ndb_test;
+
++———-+——————————————————————————————————————————+
+
+| Table    | Create Table        |
+
++———-+——————————————————————————————————————————+
+
+| ndb_test | CREATE TABLE `ndb_test` (
+
+`id` int(11) NOT NULL,
+
+`name` char(64) DEFAULT NULL
+
+) ENGINE=ndbcluster DEFAULT CHARSET=latin1 |
+
++———-+——————————————————————————————————————————+
+
+1 row in set (0.00 sec)
+
+mysql> INSERT INTO ndb_test values (1,’ndb cluster’);
+
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO ndb_test values (2,’mysql cluster’);
+
+Query OK, 1 row affected (0.00 sec)
+
+第二步：进入到sql节点2（192.168.10.220）查看数据
+
+mysql> show databases;
+
++——————–+
+
+| Database           |
+
++——————–+
+
+| information_schema |
+
+| mysql              |
+
+| ndbinfo            |
+
+| ndbtest            |
+
+| performance_schema |
+
+| test               |
+
++——————–+
+
+6 rows in set (0.00 sec)
+
+mysql> use ndbtest;
+
+Database changed
+
+mysql> show tables;
+
++——————-+
+
+| Tables_in_ndbtest |
+
++——————-+
+
+| ndb_test          |
+
++——————-+
+
+1 row in set (0.02 sec)
+
+mysql> select * from ndb_test;
+
++—-+—————+
+
+| id | name          |
+
++—-+—————+
+
+|  2 | mysql cluster |
+
+|  1 | ndb cluster   |
+
++—-+—————+
+
+2 rows in set (0.03 sec)
+
+mysql> show create table ndb_test;
+
++———-+——————————————————————————————————————————+
+
+| Table    | Create Table    |
+
++———-+——————————————————————————————————————————+
+
+| ndb_test | CREATE TABLE `ndb_test` (
+
+`id` int(11) NOT NULL,
+
+`name` char(64) DEFAULT NULL
+
+) ENGINE=ndbcluster DEFAULT CHARSET=latin1 |
+
++———-+——————————————————————————————————————————+
+
+1 row in set (0.00 sec)
+
+第三步：反向测试，在sql节点2上增加数据，再去sql节点1上查看：
+
+mysql> insert into ndb_test VALUES(3,’centos4 sql’);
+
+Query OK, 1 row affected (0.01 sec)
+
+在sql节点1上查看
+
+mysql> select * from ndb_test;
+
++—-+—————+
+
+| id | name          |
+
++—-+—————+
+
+|  1 | ndb cluster   |
+
+|  3 | centos4 sql   |
+
+|  2 | mysql cluster |
+
++—-+—————+
+
+3 rows in set (0.00 sec)
+
+注意：
+
+启动mysql 集群需要有序的执行一组命令：
+
+    启动管理节点
+    启动ndb node
+    启动mysql 服务器（SQL节点）
+
+关闭集群
+
+正如启动是有特定顺序的，关闭同样也是有顺序的：
+
+    如果集群间有复制正在运行，先使slave 跟上进度，再停止复制；
+    关闭SQL节点（mysql）；
+    在NDB管理控制台发出SHUTDOWN命令；
+    退出NDB管理控制台。
+
+参考：
+
+http://dev.mysql.com/doc/refman/5.1/en/mysql-cluster-config-example.html
+
+http://dev.mysql.com/doc/refman/5.5/en/mysql-cluster-config-starting.html

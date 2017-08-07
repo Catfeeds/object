@@ -1,0 +1,14 @@
+
+nb2
+后门
+192.168.0.1
+前门
+
+
+nb7
+	
+web:admin admin
+前门
+192.168.0.20
+web:admin admin
+

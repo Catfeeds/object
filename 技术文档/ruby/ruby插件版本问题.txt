@@ -1,0 +1,8 @@
+
+如果由于多个版本存在导致 Gemfile.lock冲突,(如rake)执行
+rm -f Gemfile.lock
+gem exec rake
+
+##可生成新的  Gemfile.lock
+
+

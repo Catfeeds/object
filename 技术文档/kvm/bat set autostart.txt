@@ -1,0 +1,18 @@
+
+
+
+_STAT="shut off"
+#_STAT="running"
+
+
+[ ${_STAT} == "running" ]  && _IF_AUTO=""
+[ ${_STAT} == "shut off" ]  && _IF_AUTO="--disable"
+##set autostart
+
+_NO_AUTO=`virsh list --all  | grep "${_STAT}" | awk '{print $2}'`
+for NOW in ${_NO_AUTO}
+do
+	echo "setting $NOW autostart"
+	virsh autostart ${NOW} ${_IF_AUTO}
+done
+

@@ -1,0 +1,4 @@
+        if ($http_x_forwarded_for ~ 42.62.5|210.12.69.50|123.113.205.2) {
+                #set $up_num 3;
+                set $if_dep "${if_dep}2";
+        }

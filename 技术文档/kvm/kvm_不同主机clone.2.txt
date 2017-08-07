@@ -1,0 +1,117 @@
+
+
+10.0.0.32:centos-1-46
+
+virsh deumpxml org-domain > domain.xml
+rsync -av hosts    xxx:/x/x/x
+
+
+########## begian
+###20G disk
+
+
+rsync -av 10.0.0.32:/data/kvm/hosts/centos-1-46/ .
+
+_new_dom="centos-10-0-1-69"
+
+#修改domain.xml
+修改name字段
+删除uuid字义字段
+修改  disk  定义目录
+
+  <name>centos-1-50</name>
+  <memory unit='KiB'>32097152</memory>
+  <currentMemory unit='KiB'>8097152</currentMemory>
+  <vcpu placement='static' current='8'>16</vcpu>
+
+
+删除:		mac address		配置行
+
+
+#查看网卡
+#virsh domiflist ${_new_dom}
+
+#删除旧的网卡(如果使用旧网卡会导致mac冲突)
+#virsh detach-interface ${_new_dom} --type bridge --config
+
+
+
+
+#virsh attach-interface ${_new_dom} --type bridge \
+#  --source br0 --model virtio \
+#  --persistent --config
+
+
+#virsh attach-interface ${_new_dom} --type bridge \
+#  --source br0 --model virtio \
+#  --persistent --config --live
+
+#修改ip
+#注释UUID
+#关于mac HWADDR
+#grep "mac address" /etc/libvirt/qemu/newhost.xml
+#将ifcfg-eth0的mac 地址改成 新mac地址
+
+
+virt-edit -d ${_new_dom} /etc/sysconfig/network-scripts/ifcfg-eth0
+
+#1.新文件的mac地址改成新的mac,
+#2.清空文件
+#3.直接将文件删除.
+virt-edit -d ${_new_dom} /etc/udev/rules.d/70-persistent-net.rules 
+
+
+#修改机器名
+virt-edit -d ${_new_dom} /etc/sysconfig/network
+
+virsh start ${_new_dom}
+
+
+
+
+#添加新硬盘
+
+qemu-img create  -f qcow2 ${_new_dom}-data1.qcow2  100G
+
+virsh attach-disk --domain ${_new_dom} \
+    --source  `pwd`/${_new_dom}-data1.qcow2  \
+    --sourcetype  file  \
+    --target vdb  \
+    --driver qemu  \
+    --subdriver  qcow2 \
+    --cache  none  \
+    --type   disk  \
+    --persistent  --config    --live
+    
+    
+#####lvm
+pvcreate /dev/vdb
+vgcreate 
+vgcreate lvm-data1 /dev/vdb
+lvcreate -n data -l 100%FREE  lvm-data1 /dev/vdb
+mkfs -t ext4 /dev/lvm-data1/data
+
+
+
+
+
+
+
+
+
+###########################################
+复制 newhost.img到其它机器对应目录
+复制host.xml文件,到/etc/libvirt/qemu/ ,
+修改文件的相应目录,确保 newhost.img目录正确 .
+
+#add a host
+virsh define newhost.xml
+
+#delete a host
+virsh undefine newhost
+
+
+virsh start newhost
+
+
+

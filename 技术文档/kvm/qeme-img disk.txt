@@ -1,0 +1,15 @@
+
+qemu-img create  -f qcow2 centos-1-70-data1.qcow2  100G
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+
+config setup
+        # strictcrlpolicy=yes
+         uniqueids = no
+        #charondebug = esp 4,ike 4
+
+# Add connections here.
+
+# Sample VPN connections
+
+#conn sample-self-signed
+#      leftsubnet=10.1.0.0/16
+#      leftcert=selfCert.der
+#      leftsendcert=never
+#      right=192.168.0.2
+#      rightsubnet=10.2.0.0/16
+#      rightcert=peerCert.der
+#      auto=start
+
+#conn sample-with-ca-cert
+#      leftsubnet=10.1.0.0/16
+#      leftcert=myCert.pem
+#      right=192.168.0.2
+#      rightsubnet=10.2.0.0/16
+#      rightid="C=CH, O=Linux strongSwan CN=peer name"
+#      auto=start
+conn %default
+        keyexchange=ike
+        dpdaction=clear
+
+conn shyt
+        keyexchange=ikev1
+        rekey = yes
+        dpddelay=10s
+        dpdtimeout=30s
+        ikelifetime=24h
+        lifetime = 8h
+        margintime=9m
+        reauth = yes
+        left=172.20.2.102
+        leftid=124.127.251.50
+        leftsubnet=10.3.201.0/24  #1.argument 2.add only this subnet 3.multi subnet use ip xfrm
+        right=42.62.5.229
+        rightid=42.62.5.229
+        rightsubnet=10.0.0.0/16
+        type=tunnel
+        authby=psk
+        leftauth=psk
+        rightauth=psk
+        auto=route
+        #aggressive=yes
+        #ike=3des-sha-modp2048
+        ike=3des-sha-modp1024
+        esp=3des-md5-modp1024
+        replay_window=0
+        

@@ -1,0 +1,39 @@
+
+1. set default upstream in nginx.conf
+set $company 2;
+include pre_dep ;
+
+2. pre_dep file:
+"include map_file ;"
+
+
+3. include map file
+#$remote_addr        $http_x_forwarded_for
+
+
+map $http_x_forwarded_for $company {
+
+    default 3;
+    210.12.69.5*  1;
+}
+
+
+
+4. proxy_pass  http://up$company ;
+
+5.upstreams:
+up1: ip64
+up2: ip64-67
+up3: ip65-67
+
+####发布
+开启分流:让公司的ip访问ip64,其它的访问线上服
+echo 'include map_file ;' > pre_dep
+重起nginx
+发布 64代码
+发布其它服务器代码
+echo '' > pre_dep
+重起nginx
+
+
+###需要将64上设置唯一代码的页面,方便测试确认是否访问的64

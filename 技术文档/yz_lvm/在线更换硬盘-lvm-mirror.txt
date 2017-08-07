@@ -1,0 +1,36 @@
+
+lvs -a -o +devices
+
+
+
+pvcreate /dev/xxx
+
+vgextend /dev/xxx
+
+
+#
+#lvconvert -m1 /dev/lv-name /dev/sdb7 /dev/sdc /dev/sdb6
+
+
+lvconvert -m1  /dev/vg-name/lv-name  /dev/old /dev/new    --corelog
+
+
+#lv÷–»•≥˝old”≤≈Ã
+lvconvert -m0  /dev/vg-name/lv-name   /dev/new
+vgreduce   vg-name /dev/old
+
+
+
+#vgreduce  -®Cremovemissing  -®Cforce vg-name
+
+
+#lvscan
+# lvchange -a y /dev/test/testlv
+
+
+
+#vgreduce vg-name /old
+
+pvremove /dev/old
+
+
