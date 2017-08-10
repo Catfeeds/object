@@ -1,0 +1,19 @@
+
+
+
+
+森华: Hillstone (10.0.1.1,42.62.5.229)
+
+
+
+
+
+奥北:
+172.20.2.102
+
+/usr/local/sbin/ipsec start
+#以上,启动以后 10.3.201.0/24的可以与 森华 10.0.1.0互通,
+通过以下脚本:
+sh /root/tools/add.172.traffic.sh
+sh /root/tools/192.add.traffic.sh
+添加 172.20网段和 192.168网段与 森华10.0.1.0互通.

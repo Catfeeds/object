@@ -1,0 +1,10 @@
+
+
+172.20.2.101
+
+
+添加帐号:
+编辑文件 :  /etc/ppp/chap-secrets
+按以下格式添加:
+# Secrets for authentication using CHAP
+# client        server       secret                  IP addresses
