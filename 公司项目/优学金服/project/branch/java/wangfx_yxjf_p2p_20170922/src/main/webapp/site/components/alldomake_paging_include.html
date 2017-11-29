@@ -1,0 +1,126 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:fragment rendered="#{inviteList.currentPage-5> 1}">
+		<h:commandLink title="到第一页" value="首页">
+			<f:ajax listener="#{inviteList.setCurrentPage(1)}" ></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage > 1}">
+		<h:commandLink title="到上一个页面" styleClass="pre" value="上一页">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-1)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage-5 > 0}">
+		<h:commandLink title="到第 #{inviteList.currentPage-5} 页"
+			value="#{inviteList.currentPage-5}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-5)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage-4 > 0}">
+		<h:commandLink title="到第 #{inviteList.currentPage-4} 页"
+			value="#{inviteList.currentPage-4}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-4)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage-3 > 0}">
+		<h:commandLink title="到第 #{inviteList.currentPage-3} 页"
+			value="#{inviteList.currentPage-3}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-3)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage-2 > 0}">
+		<h:commandLink title="到第 #{inviteList.currentPage-2} 页"
+			value="#{inviteList.currentPage-2}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-2)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{inviteList.currentPage-1 > 0}">
+		<h:commandLink title="到第 #{inviteList.currentPage-1} 页"
+			value="#{inviteList.currentPage-1}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage-1)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<a class="on">#{inviteList.currentPage}</a>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage)}">
+		<h:commandLink title="到第 #{inviteList.currentPage+1} 页"
+			value="#{inviteList.currentPage+1}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+1)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage+1)}">
+		<h:commandLink title="到第 #{inviteList.currentPage+2} 页"
+			value="#{inviteList.currentPage+2}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+2)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage+2)}">
+		<h:commandLink title="到第 #{inviteList.currentPage+3} 页"
+			value="#{inviteList.currentPage+3}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+3)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage+3)}">
+		<h:commandLink title="到第 #{inviteList.currentPage+4} 页"
+			value="#{inviteList.currentPage+4}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+4)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage+4)}">
+		<h:commandLink title="到第 #{inviteList.currentPage+5} 页"
+			value="#{inviteList.currentPage+5}">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+5)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount>inviteList.pageSize*inviteList.currentPage}">
+		<h:commandLink title="去下一个页面" styleClass="next" value="下一页">
+			<f:ajax
+				listener="#{inviteList.setCurrentPage(inviteList.currentPage+1)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{inviteList.lazyModel.rowCount/inviteList.pageSize > (inviteList.currentPage+5)}">
+		<ui:param name="endPage"
+			value="#{math:ceil(inviteList.lazyModel.rowCount/inviteList.pageSize)}"></ui:param>
+		<h:commandLink title="到最后一页" value="尾页">
+			<f:ajax listener="#{inviteList.setCurrentPage(endPage)}"
+				render="dataTable"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+
+
+
+</f:view>
