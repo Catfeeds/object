@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<f:metadata>
+	<f:viewParam name="id" value="#{bankCardUnbindApproveHome.id}"></f:viewParam>
+</f:metadata>
+<ui:composition template="/admin/templates/ui.xhtml">
+	<f:event type="preRenderComponent"
+							listener="#{bbankCardUnbindApproveHome.initImgUrl()}" />
+	<ui:define name="content">
+	<o:importConstants type="com.zw.p2p.bankcard.BankCardConstants.BankCardUnbindApproveStatus" />
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel value="#{commonMsg.currentPositionLabel} #{bankCardUnbindApproveHome.instance.userid.username}-银行卡变更审核单明细"></h:outputLabel>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form>
+				<h:inputHidden value="#{bankCardUnbindApproveHome.instance.id}"></h:inputHidden>
+				<h:panelGrid columns="3" columnClasses="col1,col2,col3" id="panel">
+
+					<h:outputLabel value="申请人" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveHome.instance.userid.username}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="姓名" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveHome.instance.userid.realname}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="发起申请时间" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveHome.instance.commitTime}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="审核类型" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveList.getApprovetypeStr(bankCardUnbindApproveHome.instance.approvetype)}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="手持身份证的照片" styleClass="form-input-label"></h:outputLabel>
+					<h:panelGrid><ui:repeat var="img"
+							value="#{bankCardUnbindApproveHome.idcardsimg()}">
+							<p:panel style="float:left;width:500px;height:600px;">
+
+									<img src="#{bankCardUnbindApproveHome.getImgUrl(bankCardUnbindApproveHome.instance.resouse)}#{img}"
+									style="width:100%;height:590px;max-width: 500px; max-height: 590px;"	></img>
+							</p:panel>
+						</ui:repeat></h:panelGrid>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+
+					<h:outputLabel value="银行开具的证明" styleClass="form-input-label"></h:outputLabel>
+					<h:panelGrid>
+						<ui:repeat var="img"
+							value="#{bankCardUnbindApproveHome.bankProvesimg()}">
+							<p:panel style="float:left;width:500px;height:600px;">
+
+								<img src="#{bankCardUnbindApproveHome.getImgUrl(bankCardUnbindApproveHome.instance.resouse)}#{img}"
+									style="width:100%;height:590px;max-width: 500px; max-height: 590px;"	></img>
+							</p:panel>
+						</ui:repeat>
+
+					</h:panelGrid>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+
+					<h:outputLabel value="解绑声明" styleClass="form-input-label"></h:outputLabel>
+					<h:panelGrid>
+						<ui:repeat var="img"
+							value="#{bankCardUnbindApproveHome.statementTextsimg()}">
+							<p:panel style="float:left;width:500px;height:600px;">
+
+									<img src="#{bankCardUnbindApproveHome.getImgUrl(bankCardUnbindApproveHome.instance.resouse)}#{img}"
+										style="width:100%;height:590px;max-width: 500px; max-height: 590px;"	></img>
+							</p:panel>
+						</ui:repeat>
+					</h:panelGrid>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+
+
+
+					<h:outputLabel value="审批时间" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveHome.instance.approveTime}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="审批人" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveHome.instance.approveUser.username}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					<h:outputLabel value="审批结果" styleClass="form-input-label"></h:outputLabel>
+					<h:outputText
+						value="#{bankCardUnbindApproveList.getStautsData(bankCardUnbindApproveHome.instance.status)}"></h:outputText>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+					
+					
+					<h:outputLabel value="审批意见/拒绝原因" styleClass="form-input-label"></h:outputLabel>
+					 <ui:fragment rendered="#{bankCardUnbindApproveHome.instance.status eq BankCardUnbindApproveStatus.CS.getIndex()}">
+					 <h:inputText
+						value="#{bankCardUnbindApproveHome.instance.approveDes}"></h:inputText>
+					  </ui:fragment>
+					   <ui:fragment rendered="#{bankCardUnbindApproveHome.instance.status != BankCardUnbindApproveStatus.CS.getIndex()}">
+						 <h:outputText
+						value="#{bankCardUnbindApproveHome.instance.approveDes}"></h:outputText>
+					  </ui:fragment>
+					<h:outputLabel value="" styleClass="form-input-label"></h:outputLabel>
+
+
+
+					<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+					<ui:fragment  rendered="#{bankCardUnbindApproveHome.instance.status eq BankCardUnbindApproveStatus.CS.getIndex()}">
+						<p:commandButton action="#{bankCardUnbindApproveHome.agree}"
+							style="margin-left:5px;"
+							onclick="return confirm('您确定审核通过吗？此操作不可撤销！');" value="通过"
+							ajax="false">
+						</p:commandButton>
+						<p:commandButton action="#{bankCardUnbindApproveHome.refuse}"
+							style="margin-left:5px;"
+							onclick="return confirm('您确定拒绝吗？此操作不可撤销！');" value="拒绝"
+							ajax="false">
+						</p:commandButton>
+					</ui:fragment>
+				</h:panelGrid>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,66 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<f:metadata>
+		<f:viewParam name="id" value="#{rateTicketRuleHome.id}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+	<o:importConstants type="com.zw.p2p.rateticket.RateTicketConstants.RESOURCETYPE" />
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel value="#{commonMsg.currentPositionLabel} 管理员添加现金券"></h:outputLabel>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form id="form">
+				<h:panelGrid columns="3" columnClasses="col1,col2" id="panel">
+
+					<h:outputLabel value="用户"></h:outputLabel>
+					<p:autoComplete value="#{cashTicketHome.instance.user}"
+						title="输入用户名自动检索用户，请在检索结果中选择用户" emptyMessage="未搜索到用户"
+						minQueryLength="2" required="true" label="借款用户"
+						completeMethod="#{userList.queryUsersByUserName}"
+						forceSelection="true" var="u" itemLabel="#{u.username}"
+						itemValue="#{u}" converter="archer.EntityConverter">
+					</p:autoComplete>
+					<h:outputLabel value=""></h:outputLabel>
+					<h:outputLabel value="现金券金额"></h:outputLabel>
+					<h:inputText label="现金券金额" required="true" 
+						value="#{cashTicketHome.instance.money}">
+						<f:convertNumber maxFractionDigits="2" minIntegerDigits="0" />
+						  <f:validateDoubleRange  minimum="0.01"></f:validateDoubleRange>
+						</h:inputText>
+					<h:outputLabel value=""></h:outputLabel>
+
+					<h:outputLabel value="有效期"></h:outputLabel>
+					<h:inputText label="有效期" required="true" 
+						value="#{cashTicketHome.useLine}">
+						  <f:convertNumber maxFractionDigits="0"/>
+						  <f:validateDoubleRange  minidmum="1"></f:validateDoubleRange>
+					</h:inputText>
+					<h:outputLabel value=""></h:outputLabel>
+						
+					<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+					<ui:fragment>
+						<p:commandButton id="saveBtn" action="#{cashTicketHome.save}"
+							ajax="false" value="#{commonMsg.saveLabel}"></p:commandButton>
+						<p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+						<p:blockUI block="panel" trigger="saveBtn" />
+					</ui:fragment>
+				</h:panelGrid>
+
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
+

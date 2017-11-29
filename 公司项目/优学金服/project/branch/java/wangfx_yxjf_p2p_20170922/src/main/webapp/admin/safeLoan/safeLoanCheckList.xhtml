@@ -1,0 +1,161 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	<f:metadata>
+		<f:viewParam name="name" value="#{safeLoanList.name}"></f:viewParam>
+		<f:viewParam name="status" value="#{safeLoanList.status}"></f:viewParam>
+	</f:metadata>
+	
+	<ui:define name="content">
+		<o:importConstants type="com.zw.p2p.safeloan.common.SafeLoanConstants.SafeLoanStatus" />
+		
+		<div class="entry">
+		
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;" value="#{commonMsg.currentPositionLabel} 理财产品管理"></h:outputLabel>
+				</p:toolbarGroup>
+			</p:toolbar>
+			
+			<h:form id="form">
+				<p:spacer></p:spacer>
+				<p:panel id="filters">
+					<p:inputText id="searchName" value="#{safeLoanList.name}"></p:inputText>
+					
+                    <h:selectOneMenu value="#{safeLoanList.status}">
+                    	<f:selectItem itemLabel="请选择产品状态" itemValue=""/>
+                    	<f:selectItems var="ub" value="#{safeLoanList.getStautsList()}"
+                    		itemValue="#{ub.index}" itemLabel="#{ub.name}"/>
+                    </h:selectOneMenu>
+						
+					<p:commandButton process="filters" id="searchBtn" update="dataTable" value="#{commonMsg.searchLabel}"></p:commandButton>
+					<p:commandButton value="#{commonMsg.resetLabel}" onclick="$('#form')[0].reset();$('#form\\:searchBtn').click();"></p:commandButton>
+				</p:panel>
+				
+				<p:watermark for="searchName" value="产品名称"></p:watermark>
+
+				<p:spacer></p:spacer>
+				<p:dataTable id="dataTable" value="#{safeLoanList.lazyModel}"
+					var="safeLoan" paginator="true" paginatorPosition="bottom"
+					rows="15" lazy="true" emptyMessage="#{commonMsg.noResultMsg}" 
+					sortBy="safeLoan.commitTime" sortOrder="descending"
+					currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+					paginatorTemplate="#{commonMsg.paginatorTemplate}">
+					
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="编号"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.id}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="产品名称"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.name}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="收益率"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.rate}%"></h:outputText>
+					</p:column>
+					<p:column width="80" style="text-align:right;">
+						<f:facet name="header">
+							<h:outputText value="总额"></h:outputText>
+						</f:facet>
+						<h:outputText style="text-align:right;" value="#{safeLoan.loanMoney}">
+							<f:convertNumber minIntegerDigits="1" minFractionDigits="2" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="投资期"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.deadhours}（小时）"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="锁定期"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.deadline}#{safeLoan.unit eq 'day'?'天':'个月'}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="录入时间"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.approveBeginTime}">
+							<f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" timeZone="GMT+8" />
+						</h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="产品状态"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanList.getStautsData(safeLoan.status)}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="审核意见"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.approveMsg}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="发布时间"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoan.commitTime}">
+							<f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" timeZone="GMT+8" />
+						</h:outputText>
+					</p:column>
+					<p:column width="80" style="text-align:right;">
+						<f:facet name="header">
+							<h:outputText value="已投金额"></h:outputText>
+						</f:facet>
+						<h:outputText style="text-align:right;" value="#{safeLoan.money}">
+							<f:convertNumber minIntegerDigits="1" minFractionDigits="2" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="操作">
+			            <ui:fragment rendered="#{safeLoan.status==SafeLoanStatus.CS.getIndex()}">
+	                    	<h:link value="审核" outcome="/admin/safeLoan/safeLoanVerify">
+	                    		<f:param name="id" value="#{safeLoan.id}"></f:param>
+	                    	</h:link>
+						</ui:fragment>
+						 <ui:fragment rendered="#{safeLoan.status==SafeLoanStatus.BTG.getIndex()}">
+	                    	<h:link value="审核" outcome="/admin/safeLoan/safeLoanVerify">
+	                    		<f:param name="id" value="#{safeLoan.id}"></f:param>
+	                    	</h:link>
+						</ui:fragment>
+						<ui:fragment rendered="#{safeLoan.status==SafeLoanStatus.TZZ.getIndex()}">
+						</ui:fragment>
+						
+						<ui:fragment rendered="#{safeLoan.status==SafeLoanStatus.FHZ.getIndex()}">
+	                    	<h:link value="复核" outcome="/admin/safeLoan/safeLoanRecheck">
+	                    		<f:param name="id" value="#{safeLoan.id}"></f:param>
+	                    	</h:link>
+						</ui:fragment>
+						
+                    </p:column>
+					
+					<f:facet name="footer"> 
+						<p:commandButton value="导出Excel" ajax="false">
+							<p:dataExporter target="dataTable" type="xls" 
+								fileName="safeLoanList" pageOnly="false"></p:dataExporter>
+						</p:commandButton>
+	 		        </f:facet>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</ui:define>
+
+</ui:composition>

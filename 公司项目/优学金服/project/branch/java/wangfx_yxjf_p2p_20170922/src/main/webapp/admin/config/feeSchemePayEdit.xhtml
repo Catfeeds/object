@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<f:metadata>
+	<f:viewParam name="id" value="#{feeSchemePayListHome.id}"></f:viewParam>
+</f:metadata>
+<f:metadata>
+	<f:viewParam name="scheme_id" value="#{feeSchemePayListHome.scheme_id}"></f:viewParam>
+</f:metadata>
+<ui:composition template="/admin/templates/ui.xhtml">
+	<ui:define name="content">
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel
+							value="#{commonMsg.currentPositionLabel} 编辑: 充值提现费率方案>方案详细>支付公司"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<p:button value="返回"
+							  outcome="/admin/config/feeSchemePayList?scheme_id=#{feeSchemePayListHome.scheme_id}"></p:button>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form>
+				<h:panelGrid columns="2" columnClasses="col1,col2" id="panel">
+					<h:outputLabel value="#{commonMsg.IDLabel}"
+								   styleClass="form-input-label"></h:outputLabel>
+					<h:inputText value="#{feeSchemePayListHome.instance.id}"
+								 label="#{commonMsg.IDLabel}" id="schemeId" required="true"
+								 readonly="#{not empty feeSchemePayListHome.instance.id}"></h:inputText>
+
+					<h:outputLabel value="支付公司名称"
+								   styleClass="form-input-label"></h:outputLabel>
+					<h:inputText value="#{feeSchemePayListHome.instance.name}"></h:inputText>
+
+					<h:outputLabel value="#{commonMsg.descriptionLabel}"
+								   styleClass="form-input-label"></h:outputLabel>
+					<h:inputTextarea cols="80"
+									 value="#{feeSchemePayListHome.instance.description}"></h:inputTextarea>
+
+					<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+					<ui:fragment>
+						<p:commandButton value="#{commonMsg.saveLabel}"
+										 action="#{feeSchemePayListHome.save}" id="saveBtn"></p:commandButton>
+						<p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+						<p:blockUI block="panel" trigger="saveBtn" />
+					</ui:fragment>
+				</h:panelGrid>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<f:metadata>
+	<f:viewParam name="id" value="#{safeLoanHome.id}"></f:viewParam>
+</f:metadata>
+<ui:composition template="/admin/templates/ui.xhtml">
+	<ui:define name="content">
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel
+						value="#{commonMsg.currentPositionLabel} 审核 : 理财产品"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<p:button value="理财产品管理"
+						outcome="/admin/safeLoan/safeLoanList"></p:button>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form id="verify">
+			<h:inputHidden value="#{safeLoanHome.instance.id}"></h:inputHidden>
+				<h:panelGrid columns="3" columnClasses="col1,col2,col3" id="panel">
+				
+					<h:outputLabel value="#{safeLoanMsg.name}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.name}"></h:outputText>
+						<h:outputLabel value="产品名字"
+						styleClass="form-input-label"></h:outputLabel>
+
+					<h:outputLabel value="业务逻辑"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:selectOneMenu value="#{safeLoanHome.instance.inteertype}"  disabled="true">
+						<f:selectItem itemLabel="自动匹配期限一致的散标，不复利投资" itemValue="2" />
+						<f:selectItem itemLabel="自动匹配散标，自动复利投资" itemValue="1" />
+					</h:selectOneMenu>
+					<h:outputLabel value="计息方式"
+						styleClass="form-input-label"></h:outputLabel>
+
+					<h:outputLabel value="#{safeLoanMsg.deadline}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.deadline}"></h:outputText>
+					<h:outputLabel value="#{safeLoanHome.instance.unit eq 'day'?'天':'个月'}"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.deadhours}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.deadhours}"></h:outputText>
+					<h:outputLabel value="小时"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.loanMoney}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.loanMoney}">
+					 <f:convertNumber maxFractionDigits="2"
+                       groupingUsed="true"
+                       currencySymbol=""
+                       maxIntegerDigits="20" 
+                       /> 
+					</h:outputText>
+					<h:outputLabel value="元"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.rate}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.rate}"></h:outputText>
+					<h:outputLabel value="%，收益与本金在到期后一并返还"
+						styleClass="form-input-label"></h:outputLabel>
+						
+					<h:outputLabel value="#{safeLoanMsg.description}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:selectOneMenu value="#{safeLoanHome.instance.description.id}" disabled="true"
+						label="产品描述">
+						<f:selectItem itemValue="" itemLabel="--请选择产品描述--"/>
+						<f:selectItems
+							value="#{nodeList.getNodes('safeloandes',10).data}"
+							var="node" itemLabel="#{node.title}" itemValue="#{node.id}" />
+					</h:selectOneMenu>
+					<h:outputLabel value=""
+						styleClass="form-input-label"></h:outputLabel>
+						
+					<h:outputLabel value="#{safeLoanMsg.normalPro}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:selectOneMenu value="#{safeLoanHome.instance.normalPro.id}" disabled="true"
+						label="常见问题">
+						<f:selectItem itemValue="" itemLabel="--请选择产品常见问题--"/>
+						<f:selectItems
+							value="#{nodeList.getNodes('safeloanpro',10).data}"
+							var="node" itemLabel="#{node.title}" itemValue="#{node.id}" />
+					</h:selectOneMenu>
+					<h:outputLabel value=""
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.minInvestMoney}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.minInvestMoney}"></h:outputText>
+					<h:outputLabel value="元，每笔投资最小金额"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.incMoney}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.incMoney}"></h:outputText>
+					<h:outputLabel value="元，每笔投资金额以多少为倍数递增"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.maxInvestMoney}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.maxInvestMoney}"></h:outputText>
+					<h:outputLabel value="元，每笔投资最大金额"
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{safeLoanMsg.enableExit}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:selectOneMenu value="#{safeLoanHome.instance.enableExit}" disabled="true">
+						<f:selectItem itemLabel="不允许" itemValue="2" />
+						<f:selectItem itemLabel="允许" itemValue="1" />
+					</h:selectOneMenu>
+					<h:outputLabel value=""
+						styleClass="form-input-label"></h:outputLabel>
+						
+						
+					<h:outputLabel value="#{safeLoanMsg.fine}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:outputText value="#{safeLoanHome.instance.fine}"></h:outputText>
+					<h:outputLabel value="%，扣除本金比例"
+						styleClass="form-input-label"></h:outputLabel>
+					
+						
+					<h:outputLabel value="#{safeLoanMsg.contract}"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:selectOneMenu value="#{safeLoanHome.instance.contract.id}" disabled="true"
+						label="合同" >
+						<f:selectItem itemValue="" itemLabel="--请选择无忧宝服务协议--"/>
+						<f:selectItems
+							value="#{nodeList.getNodes('safeloancon',10).data}"
+							var="node" itemLabel="#{node.title}" itemValue="#{node.id}" />
+					</h:selectOneMenu>
+					<h:outputLabel value=""
+						styleClass="form-input-label"></h:outputLabel>
+					
+						<h:outputLabel value="审核意见"
+						styleClass="form-input-label"></h:outputLabel>
+					<h:inputText id="advice" value="#{safeLoanHome.instance.approveMsg}"></h:inputText>
+						<h:outputLabel value=""
+						styleClass="form-input-label"></h:outputLabel>
+					
+					<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+					<ui:fragment>
+						<p:commandButton action="#{safeLoanHome.verify}"
+							style="margin-left:5px;"
+							onclick="return confirm('您确定审核通过吗？此操作不可撤销！');" value="审核通过"
+							ajax="false">
+						</p:commandButton>
+						<p:commandButton action="#{safeLoanHome.disverify}"
+							style="margin-left:5px;"
+							onclick="return $('#verify\\:advice').val().trim() == ''?alert('请填写审核意见'): confirm('您确定驳回审核吗？');" value="审核不通过"
+							ajax="false">
+						</p:commandButton>
+					</ui:fragment>
+				</h:panelGrid>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,193 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	
+	<ui:define name="content">
+	<style>
+	.reportDialogView{
+		display:none;
+		position: fixed;
+		height: 60%;
+		width: 60%;
+		top:20%;
+		left:20%;
+		background-color: #fdfdfd;
+		border:1px #e20000 solid;
+		}
+		.zhuview{
+		width: 100%;
+   		height: 90%;
+   		 }
+		.closeView{
+		width: 80px;
+		height: 30px;
+		border-radius:5px;
+		background-color: #e20000;
+		margin: 0 auto;
+	    text-align: center;
+	    line-height: 30px;
+	    color: #fff;
+	    letter-spacing: 5px;
+		}
+	</style>
+	<script>
+	$(function(){
+	   $(".closeView").click(function(){
+	       $("#reportDialog").hide();
+	   }); 
+	});
+	function initDialog(){
+	    $("#reportDialog").show();
+	    return false;
+	}
+	</script>
+		<div class="entry">
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;"
+						value="#{commonMsg.currentPositionLabel}用户在投资金一览表"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<!-- 					<p:button value="#{linkMsg.addLabel}#{linkMsg.linkTypeLabel}" -->
+					<!-- 						outcome="/admin/link/linkTypeEdit"></p:button> -->
+				</p:toolbarGroup>
+			</p:toolbar>
+			<h:form id="form">
+				<p:spacer></p:spacer>
+				<p:panel id="filters">
+
+					<p:inputText id="searchName" value="#{userInvestList.username}"></p:inputText>
+					<p:inputText id="referrerId" value="#{userInvestList.referrerid}"></p:inputText>
+					
+					<p:commandButton process="filters" update="dataTable" id="searchBtn"
+						value="#{commonMsg.searchLabel}"></p:commandButton>
+					<!-- <p:commandButton value="柱形图表" ajax="true"  oncomplete="initDialog()">
+					</p:commandButton> -->
+					<p:commandButton value="导出" ajax="false">
+						<p:dataExporter type="xls" target="oneTableExport" pageOnly="false" fileName="userInvestList" />
+					</p:commandButton>
+				</p:panel>
+				<p:watermark for="searchName" value="用户名"></p:watermark>
+				<p:watermark for="referrerId" value="推荐人用户名"></p:watermark>
+
+				
+				<p:dataTable id="dataTable" value="#{userInvestList.lazyModel}" scrollable="true"
+					var="varlist" paginator="true" paginatorPosition="bottom"
+					rows="15" lazy="true" emptyMessage="#{commonMsg.noResultMsg}" sortBy="time" sortOrder="descending"
+					currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+					paginatorTemplate="#{commonMsg.paginatorTemplate}">
+
+					<p:column width="120" sortBy="username">
+						<f:facet name="header">
+							<h:outputText value="用户名" />
+						</f:facet>
+						<h:outputText value="#{varlist.username}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="realname">
+						<f:facet name="header">
+							<h:outputText value="真实姓名" />
+						</f:facet>
+						<h:outputText value="#{varlist.realname}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="mobile_number">
+						<f:facet name="header">
+							<h:outputText value="手机号" />
+						</f:facet>
+						<h:outputText value="#{varlist.mobile_number}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="referrer_id">
+						<f:facet name="header">
+							<h:outputText value="推荐人" />
+						</f:facet>
+						<h:outputText value="#{varlist.referrer_id}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="sunmoney">
+						<f:facet name="header">
+							<h:outputText value="在投本金" />
+						</f:facet>
+						<h:outputText value="#{varlist.sunmoney}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="invnum">
+						<f:facet name="header">
+							<h:outputText value="在投笔数" />
+						</f:facet>
+						<h:outputText value="#{varlist.invnum}">
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+
+				<p:dataTable rendered="#{false}" rowIndexVar="row" id="oneTableExport" value="#{userInvestList.lazyModel}"
+							 var="varlist" paginator="true" paginatorPosition="bottom"
+							 rows="15" lazy="true" emptyMessage="#{commonMsg.noResultMsg}" sortBy="time" sortOrder="descending"
+							 currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+							 paginatorTemplate="#{commonMsg.paginatorTemplate}">
+					<p:column width="120" sortBy="username">
+						<f:facet name="header">
+							<h:outputText value="用户名" />
+						</f:facet>
+						<h:outputText value="#{varlist.username}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="realname">
+						<f:facet name="header">
+							<h:outputText value="真实姓名" />
+						</f:facet>
+						<h:outputText value="#{varlist.realname}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="mobile_number">
+						<f:facet name="header">
+							<h:outputText value="手机号" />
+						</f:facet>
+						<h:outputText value="#{varlist.mobile_number}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="referrer_id">
+						<f:facet name="header">
+							<h:outputText value="推荐人" />
+						</f:facet>
+						<h:outputText value="#{varlist.referrer_id}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="sunmoney">
+						<f:facet name="header">
+							<h:outputText value="在投本金" />
+						</f:facet>
+						<h:outputText value="#{varlist.sunmoney}">
+						</h:outputText>
+					</p:column>
+					<p:column width="120" sortBy="invnum">
+						<f:facet name="header">
+							<h:outputText value="在投笔数" />
+						</f:facet>
+						<h:outputText value="#{varlist.invnum}">
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+
+		</div>
+		<div id="reportDialog" class="reportDialogView">
+		<div class="zhuview">
+		
+		</div>
+		<p class="closeView">关闭X</p>
+		</div>
+	</ui:define>
+	
+</ui:composition>

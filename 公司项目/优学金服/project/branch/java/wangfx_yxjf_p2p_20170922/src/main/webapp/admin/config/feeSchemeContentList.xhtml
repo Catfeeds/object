@@ -1,0 +1,133 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+				xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:sec="http://www.springframework.org/security/facelets/tags"
+				xmlns:archer="http://java.sun.com/jsf/archer">
+	<f:metadata>
+		<f:viewParam name="scheme_pay_id" value="#{feeSchemePayListHome.id}"></f:viewParam>
+	</f:metadata>
+	<f:metadata>
+		<f:viewParam name="scheme_id" value="#{feeSchemeContentList.example.feeSchemePay.feeScheme.id}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+		<div class="entry">
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;"
+						value="#{commonMsg.currentPositionLabel}充值提现费率方案>支付公司>方案内容:#{feeSchemePayListHome.instance.name}"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<p:button value="返回"
+							  outcome="/admin/config/feeSchemePayList?scheme_id=#{feeSchemeContentListHome.scheme_id}"></p:button>
+							  <!--outcome="/admin/config/feeSchemePayList?scheme_id=#{feeSchemeContentListHome.scheme_id}"></p:button>-->
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+
+			<f:event type="preRenderComponent"
+					 listener="#{feeSchemeContentListHome.initSchemeContents(feeSchemePayListHome.instance.schemeContents)}" />
+			<h:form id="form">
+				<h:panelGroup id="content_info">
+					<ui:repeat var="content" value="#{feeSchemeContentListHome.schemeContents}">
+						<!--<h:form>-->
+						<p:panel>
+							<f:facet name="header">
+								#{feeSchemeContentListHome.getDirectionStr(content)}
+							</f:facet>
+
+							<h:panelGrid columns="2" columnClasses="col1,col2" id="panelContent">
+								<h:outputLabel value="单笔提现限额"></h:outputLabel>
+								<h:inputText styleClass="date_txt date_txt02" label="单笔提现限额" immediate="true" value="#{content.withdrawLimit}" required="true" autocomplete="off" maxlength="9">
+									<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+									<f:convertNumber minFractionDigits="0" />
+									<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+									<f:ajax event="blur" render="@this"></f:ajax>
+								</h:inputText>
+
+								<h:outputLabel value="每日每个账户提现限额"></h:outputLabel>
+								<h:inputText styleClass="date_txt date_txt02" label="每日提现限额" immediate="true" value="#{content.withdrawDailyLimit}" required="true" autocomplete="off" maxlength="9">
+									<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+									<f:convertNumber minFractionDigits="0" />
+									<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+									<f:ajax event="blur" render="@this"></f:ajax>
+								</h:inputText>
+
+								<h:outputLabel value="收费类型"></h:outputLabel>
+								<h:selectOneRadio value="#{content.operateMode}" immediate="true">
+									<f:selectItem itemLabel="固定金额"
+												  itemValue="fixed" />
+									<f:selectItem itemLabel="百分比"
+												  itemValue="rate" />
+								</h:selectOneRadio>
+
+								<ui:fragment>
+									<h:outputLabel value="收费标准"></h:outputLabel>
+								</ui:fragment>
+								<ui:fragment>
+									<p:panel>
+										<f:facet name="header">
+											<!-- <p:commandLink value="修改"
+												style="float:right;" process="@this" /> -->
+										</f:facet>
+
+										<p:dataTable value="#{content.schemeDetails}"
+													 var="detail" paginator="false"
+													 rows="15" lazy="true"
+													 emptyMessage="#{commonMsg.noResultMsg}">
+											<p:column headerText="下限">
+												<h:inputText value="#{detail.lowerLimit}">
+													<f:convertNumber pattern="###,###,##0" minFractionDigits="0" />
+												</h:inputText>
+											</p:column>
+											<p:column headerText="上限">
+												<h:inputText value="#{detail.upperLimit}">
+													<f:convertNumber pattern="###,###,##0" minFractionDigits="0" />
+												</h:inputText>
+											</p:column>
+											<p:column headerText="收费标准">
+												<h:inputText  value="#{detail.fee}"></h:inputText>#{feeSchemeContentListHome.getOprString(content)}
+											</p:column>
+										</p:dataTable>
+									</p:panel>
+								</ui:fragment>
+
+								<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+								<ui:fragment>
+									<!--保存不成功,用下面的方式保存-->
+									<!--<p:commandButton value="#{commonMsg.saveLabel}"-->
+													 <!--action="#{feeSchemeContentListHome.save}"-->
+													 <!--id="saveBtn">-->
+										<!--<f:setPropertyActionListener-->
+												<!--target="#{feeSchemeContentListHome.id}"-->
+												<!--value="#{content.id}"></f:setPropertyActionListener>-->
+									<!--</p:commandButton>-->
+									<p:commandButton value="#{commonMsg.saveLabel}"
+													 action="#{feeSchemeContentListHome.update}"
+													 id="saveBtn">
+										<f:setPropertyActionListener value="#{content}" target="#{feeSchemeContentListHome.instance}" />
+									</p:commandButton>
+									<!--<p:commandButton value="#{commonMsg.saveLabel}"-->
+													 <!--action="#{feeSchemeContentListHome.saveSchemeContent(content)}"-->
+													 <!--id="saveBtn">-->
+									<!--</p:commandButton>-->
+
+									<p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+									<p:blockUI block="panelContent" trigger="saveBtn" />
+								</ui:fragment>
+							</h:panelGrid>
+						</p:panel>
+						<!--</h:form>-->
+					</ui:repeat>
+				</h:panelGroup>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

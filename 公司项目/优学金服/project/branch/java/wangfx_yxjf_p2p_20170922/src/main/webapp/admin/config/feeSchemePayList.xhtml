@@ -1,0 +1,148 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+				xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:sec="http://www.springframework.org/security/facelets/tags"
+				xmlns:archer="http://java.sun.com/jsf/archer">
+	<f:metadata>
+		<f:viewParam name="scheme_id" value="#{feeSchemePayList.example.feeScheme.id}"></f:viewParam>
+		<f:viewParam name="scheme_id" value="#{feeSchemeCustomerList.example.feeScheme.id}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+		<div class="entry">
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;"
+						value="#{commonMsg.currentPositionLabel}充值提现费率方案>方案详细"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<p:button value="返回"
+							  outcome="/admin/config/feeSchemeList"></p:button>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+
+			<h:panelGroup>
+				<p:panel>
+					<f:facet name="header">
+						支付公司相关 （充值、提现时需要支付给支付公司的费用）
+					</f:facet>
+
+					<p:button value="添加支付公司"
+							  outcome="/admin/config/feeSchemePayEdit?scheme_id=#{feeSchemePayList.example.feeScheme.id}"></p:button>
+					<h:form id="formPay">
+						<p:dataTable id="dataTablePay" value="#{feeSchemePayList.lazyModel}"
+									 var="schemePay" paginator="true" paginatorPosition="bottom"
+									 rows="15" lazy="true"
+									 currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+									 paginatorTemplate="#{commonMsg.paginatorTemplate}"
+									 emptyMessage="#{commonMsg.noResultMsg}">
+							<p:column headerText="#{commonMsg.IDLabel }">
+								<h:outputText value="#{schemePay.id}"></h:outputText>
+							</p:column>
+							<p:column headerText="支付公司名称">
+								<h:outputText value="#{schemePay.name}"></h:outputText>
+							</p:column>
+							<p:column headerText="#{commonMsg.descriptionLabel}">
+								<h:outputText value="#{schemePay.description}"></h:outputText>
+							</p:column>
+							<p:column headerText="#{commonMsg.actionLabel}">
+								<h:link value="#{commonMsg.editLabel}"
+										outcome="/admin/config/feeSchemePayEdit?id=#{schemePay.id}&amp;scheme_id=#{schemePay.feeScheme.id}"></h:link>
+								|
+								<h:commandLink value="删除" action="#{feeSchemePayListHome.delete}" onclick="return confirm('您确定要删除？此操作不可恢复！')">
+									<f:setPropertyActionListener value="#{schemePay}" target="#{feeSchemePayListHome.instance}" />
+								</h:commandLink>
+								<!--用下面的方法也可以:-->
+								<!--<h:commandLink value="删除" update=":form"-->
+								<!--actionListener="#{feeSchemePayListHome.deletePay(schemePay)}"-->
+								<!--onclick="return confirm('您确定要删除？此操作不可恢复！')">-->
+								<!--</h:commandLink>-->
+								|
+								<h:link value="详细内容"
+										outcome="/admin/config/feeSchemeContentList?scheme_id=#{schemePay.feeScheme.id}&amp;scheme_pay_id=#{schemePay.id}"></h:link>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:panel>
+
+				<p:spacer></p:spacer>
+				<p:panel>
+					<f:facet name="header">
+						客户相关
+					</f:facet>
+
+					<h:panelGroup>
+						<f:event type="preRenderComponent"
+								 listener="#{feeSchemeCustomerListHome.initFromSchemeId()}" />
+						<h:form id="formCustomer">
+							<p:panel>
+								<f:facet name="header">
+									充值 （客户在充值时需要给系统支付的费用）
+								</f:facet>
+
+								<h:panelGrid columns="2" columnClasses="col1,col2">
+									<h:outputLabel value="充值收费标准"></h:outputLabel>
+									<h:inputText styleClass="date_txt date_txt02" label="充值收费标准" immediate="true" value="#{feeSchemeCustomerListHome.instance.recharge}" required="true" autocomplete="off" maxlength="9">
+										<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+										<f:convertNumber minFractionDigits="0" />
+										<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</h:panelGrid>
+							</p:panel>
+							<p:panel>
+								<f:facet name="header">
+									提现 （客户在提现时需要给系统支付的费用）
+								</f:facet>
+
+								<h:panelGrid columns="2" columnClasses="col1,col2">
+									<h:outputLabel value="阈值"></h:outputLabel>
+									<h:inputText styleClass="date_txt date_txt02" label="充值收费标准" immediate="true" value="#{feeSchemeCustomerListHome.instance.investLimit}" required="true" autocomplete="off" maxlength="9">
+										<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+										<f:convertNumber minFractionDigits="0" />
+										<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+
+									<h:outputLabel value="小于等于阈值时收费标准(元)"></h:outputLabel>
+									<h:inputText styleClass="date_txt date_txt02" label="小于等于阈值时收费标准" immediate="true" value="#{feeSchemeCustomerListHome.instance.withdrawWithinLimit}" required="true" autocomplete="off" maxlength="9">
+										<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+										<f:convertNumber minFractionDigits="0" />
+										<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+
+									<h:outputLabel value="大于阈值时收费标准(元)"></h:outputLabel>
+									<h:inputText styleClass="date_txt date_txt02" label="大于阈值时收费标准" immediate="true" value="#{feeSchemeCustomerListHome.instance.withdrawBeyondLimit}" required="true" autocomplete="off" maxlength="9">
+										<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
+										<f:convertNumber minFractionDigits="0" />
+										<archer:validateNumber precision="0" cardinalNumber="1"></archer:validateNumber>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</h:panelGrid>
+							</p:panel>
+
+							<p:panel id="panelSave">
+								<ui:fragment>
+									<p:commandButton value="#{commonMsg.saveLabel}"
+													 action="#{feeSchemeCustomerListHome.update}" id="saveBtn"></p:commandButton>
+
+									<p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+								</ui:fragment>
+							</p:panel>
+							<p:blockUI block="panelSave" trigger="saveBtn" />
+						</h:form>
+					</h:panelGroup>
+				</p:panel>
+			</h:panelGroup>
+		</div>
+	</ui:define>
+</ui:composition>

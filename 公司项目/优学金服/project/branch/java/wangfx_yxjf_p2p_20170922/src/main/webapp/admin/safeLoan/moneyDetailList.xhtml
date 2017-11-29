@@ -1,0 +1,90 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+	<f:metadata>
+		<f:viewParam name="safeLoanReId" value="#{moneyDetailList.safeLoanReId}"></f:viewParam>
+		<f:viewParam name="userid" value="#{moneyDetailList.userid}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+		<div class="entry">
+	<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;" value="#{commonMsg.currentPositionLabel}#{param.userid} -资金明细"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+					<p:button value="债权列表" outcome="/admin/safeLoan/safeLoanUserLoanList.htm?safeLoanReId=#{moneyDetailList.safeLoanReId}&amp;userid=#{moneyDetailList.userid}"></p:button>
+					<p:button value="资金明细" outcome="/admin/safeLoan/moneyDetailList.htm?safeLoanReId=#{moneyDetailList.safeLoanReId}&amp;userid=#{moneyDetailList.userid}"></p:button>
+					<p:button value="返回" outcome="/admin/safeLoan/safeLoanRecordList"></p:button>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<h:form id="form">
+
+				<p:spacer></p:spacer>
+				<p:dataTable id="dataTable" value="#{moneyDetailList.lazyModel}"
+					var="mdr" paginator="true" paginatorPosition="bottom" rows="15"
+					lazy="true" emptyMessage="#{commonMsg.noResultMsg}"
+					currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+					paginatorTemplate="#{commonMsg.paginatorTemplate}">
+
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="时间"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{mdr.commitTime}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="类型"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{moneyDetailList.getTypeStr(mdr.type)}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="支出"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{mdr.outMoney}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="收入"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{mdr.inMoney}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="标的"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{mdr.loanName}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="编号"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{mdr.id}"></h:outputText>
+					</p:column>
+					
+
+
+					<f:facet name="footer">
+						<p:commandButton value="导出Excel" ajax="false">
+							<p:dataExporter target="dataTable" type="xls"
+								fileName="safeLoanList" pageOnly="false"></p:dataExporter>
+						</p:commandButton>
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</ui:define>
+
+</ui:composition>

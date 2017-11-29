@@ -1,0 +1,82 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<f:metadata>
+		<f:viewParam name="id" value="#{couponRuleHome.id}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+	<o:importConstants type="com.zw.p2p.coupons.CouponConstants.RESOURCETYPE" />
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel value="#{commonMsg.currentPositionLabel} 红包规则编辑/添加"></h:outputLabel>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form id="form">
+				<h:panelGrid columns="3" columnClasses="col1,col2" id="panel">
+
+					<h:outputLabel value="红包金额"></h:outputLabel>
+					<h:inputText label="红包金额" required="true" 
+						value="#{couponRuleHome.instance.money}">
+						<f:convertNumber maxFractionDigits="2" minIntegerDigits="0" />
+						  <f:validateDoubleRange  minimum="0.01"></f:validateDoubleRange>
+						</h:inputText>
+					<h:outputLabel value=""></h:outputLabel>
+
+
+					<h:outputLabel value="投资使用门槛"></h:outputLabel>
+					<h:inputText label="投资使用门槛" required="true" 
+						value="#{couponRuleHome.instance.moneyCanUse}">
+						  <f:convertNumber maxFractionDigits="0"/>
+						  <f:validateDoubleRange  minimum="1"></f:validateDoubleRange>
+						</h:inputText>
+						<h:outputLabel value=""></h:outputLabel>
+						
+					<h:outputLabel value="红包类型"></h:outputLabel>
+					<h:panelGroup>
+					 <h:selectOneMenu id="resource" value="#{couponRuleHome.instance.resource}">
+                    	<f:selectItems var="ub" value="#{couponRuleHome.ruleType()}"
+                    		itemValue="#{ub.name}" itemLabel="#{ub.name}"/>
+                    </h:selectOneMenu>
+					</h:panelGroup>
+					<h:outputLabel value=""></h:outputLabel>
+					<h:outputLabel value="获得红包的条件"></h:outputLabel>
+					<h:inputText label="获得红包的条件" required="true" 
+						value="#{couponRuleHome.instance.getCouponCondition}">
+						  <f:convertNumber maxFractionDigits="0" />
+						  <f:validateDoubleRange  minimum="0"></f:validateDoubleRange>
+						</h:inputText>
+						<h:outputLabel value="注册送类型此值无效"></h:outputLabel>
+					<h:outputLabel value="有效期（天）"></h:outputLabel>
+					<h:inputText label="有效期（天）" required="true" 
+						value="#{couponRuleHome.instance.useLine}">
+						<f:convertNumber maxFractionDigits="0"  />
+						  <f:validateDoubleRange  minimum="1"></f:validateDoubleRange>
+						</h:inputText>
+					<h:outputLabel value=""></h:outputLabel>
+					
+					<h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
+					<ui:fragment>
+						<h:inputHidden value="#{couponRuleHome.instance.id}"></h:inputHidden>
+						<p:commandButton id="saveBtn" action="#{couponRuleHome.save}"
+							ajax="false" value="#{commonMsg.saveLabel}"></p:commandButton>
+						<p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+						<p:blockUI block="panel" trigger="saveBtn" />
+					</ui:fragment>
+				</h:panelGrid>
+
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
+

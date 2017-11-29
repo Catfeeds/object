@@ -1,0 +1,142 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	<f:metadata>
+		<f:viewParam name="name" value="#{safeLoanRecordList.name}"></f:viewParam>
+		<f:viewParam name="username" value="#{safeLoanRecordList.username}"></f:viewParam>
+		<f:viewParam name="status" value="#{safeLoanRecordList.status}"></f:viewParam>
+	</f:metadata>
+	
+	<ui:define name="content">
+		<o:importConstants type="com.zw.p2p.safeloan.common.SafeLoanConstants.SafeLoanStatus" />
+		
+		<div class="entry">
+		
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;" value="#{commonMsg.currentPositionLabel} 项目投资明细"></h:outputLabel>
+				</p:toolbarGroup>
+			</p:toolbar>
+			
+			<h:form id="form">
+				<p:spacer></p:spacer>
+				<p:panel id="filters">
+					<p:inputText id="searchName" value="#{safeLoanRecordList.name}"></p:inputText>
+					<p:inputText id="searchUser" value="#{safeLoanRecordList.username}"></p:inputText>
+					
+					<p:calendar id="searchSalMinTime" value="#{safeLoanRecordList.searchSalMinTime}" 
+                    	pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+                    <p:calendar id="searchSalMaxTime" value="#{safeLoanRecordList.searchSalMaxTime}"
+                    	pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+					
+                    <h:selectOneMenu value="#{safeLoanRecordList.status}">
+                    	<f:selectItem itemLabel="请选择投资状态" itemValue=""/>
+                    	<f:selectItems var="ub" value="#{safeLoanRecordList.getStautsList()}"
+                    		itemValue="#{ub.index}" itemLabel="#{ub.name}"/>
+                    </h:selectOneMenu>
+						
+					<p:commandButton process="filters" id="searchBtn" update="dataTable" value="#{commonMsg.searchLabel}"></p:commandButton>
+					<p:commandButton value="#{commonMsg.resetLabel}" onclick="$('#form')[0].reset();$('#form\\:searchBtn').click();"></p:commandButton>
+				</p:panel>
+				
+				<p:watermark for="searchName" value="理财产品名称"></p:watermark>
+				<p:watermark for="searchUser" value="投资人"></p:watermark>
+				<p:watermark for="searchSalMinTime" value="投资起始时间"></p:watermark>
+				<p:watermark for="searchSalMaxTime" value="投资截止时间"></p:watermark>
+
+				<p:spacer></p:spacer>
+				<p:dataTable id="dataTable" value="#{safeLoanRecordList.lazyModel}"
+					var="safeLoanRecord" paginator="true" paginatorPosition="bottom"
+					rows="15" lazy="true" emptyMessage="#{commonMsg.noResultMsg}" 
+					sortBy="safeLoanRecord.salTime" sortOrder="descending"
+					currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+					paginatorTemplate="#{commonMsg.paginatorTemplate}">
+					
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="理财产品名称"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecord.safeloanid.name}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="投资期限"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecord.safeloanid.deadline}#{safeLoanRecord.safeloanid.unit eq 'day'?'天':'个月'}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="收益率"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecord.safeloanid.rate}%"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="投资人"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecord.userid.username}"></h:outputText>
+					</p:column>
+					<p:column width="100" style="text-align:right;">
+						<f:facet name="header">
+							<h:outputText value="投资金额"></h:outputText>
+						</f:facet>
+						<h:outputText style="text-align:right;" value="#{safeLoanRecord.money}">
+							<f:convertNumber minIntegerDigits="1" minFractionDigits="2" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					<p:column width="140">
+						<f:facet name="header">
+							<h:outputText value="投资生效时间"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecord.salTime}">
+							<f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" timeZone="GMT+8" />
+						</h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="投资状态"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanRecordList.getStautsData(safeLoanRecord.status)}"></h:outputText>
+					</p:column>
+					
+					<p:column headerText="操作">
+			            <h:link value="投资明细" outcome="/admin/safeLoan/safeLoanRecordDetail">
+                    		<f:param name="safeLoanReId" value="#{safeLoanRecord.salrid}"></f:param>
+                    		<f:param name="userid" value="#{safeLoanRecord.userid.id}"></f:param>
+                    	</h:link> | 
+                    	<h:link value="债权列表" outcome="/admin/safeLoan/safeLoanUserLoanList">
+                    		<f:param name="safeLoanReId" value="#{safeLoanRecord.salrid}"></f:param>
+                    		<f:param name="userid" value="#{safeLoanRecord.userid.id}"></f:param>
+                    	</h:link> | 
+                    	<h:link value="资金明细" outcome="/admin/fund/userBillList">
+                    		<f:param name="userId" value="#{safeLoanRecord.userid.id}"></f:param>
+                    		<f:param name="safeLoanid" value="#{safeLoanRecord.safeloanid.id}"></f:param>
+                    	</h:link>
+                    </p:column>
+					
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="无忧宝服务协议"></h:outputText>
+						</f:facet>
+						<a href="#{path}/user/safeloan-contract/#{safeLoanRecord.salrid}"  target="_blank">预览</a>
+					</p:column>
+					<f:facet name="footer"> 
+						<p:commandButton value="导出Excel" ajax="false">
+							<p:dataExporter target="dataTable" type="xls" 
+								fileName="safeLoanRecordList" pageOnly="false"></p:dataExporter>
+						</p:commandButton>
+	 		        </f:facet>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</ui:define>
+
+</ui:composition>

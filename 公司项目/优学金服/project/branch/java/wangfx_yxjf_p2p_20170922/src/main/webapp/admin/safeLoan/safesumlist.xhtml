@@ -1,0 +1,255 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	<f:metadata>
+		<f:viewParam name="name" value="#{safeLoanList.name}"></f:viewParam>
+		<f:viewParam name="status" value="#{safeLoanList.status}"></f:viewParam>
+	</f:metadata>
+	
+	<ui:define name="content">
+		
+		<div class="entry">
+		
+			<p:toolbar>
+				<p:toolbarGroup>
+					<h:outputLabel style="padding-left: 15px;" value="#{commonMsg.currentPositionLabel} 理财投资汇总"></h:outputLabel>
+				</p:toolbarGroup>
+				
+			</p:toolbar>
+			
+			<h:form id="form">
+				<p:spacer></p:spacer>
+				<p:panel id="filters">
+					<p:inputText id="searchId" value="#{safeSumList.example.safeLoanId}"></p:inputText>
+					<p:inputText id="searchName" value="#{safeSumList.example.name}"></p:inputText>
+					<p:inputText id="searchDeadline" value="#{safeSumList.example.deadline}"></p:inputText>
+					<p:inputText id="searchRate" value="#{safeSumList.example.rate}"></p:inputText>
+					
+					<p:inputText id="searchInvestusername" value="#{safeSumList.example.investusername}"></p:inputText>
+					
+					 <p:calendar id="salMinTime" value="#{safeSumList.salMinTime}"
+                    	pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+					<p:calendar id="salMaxTime" value="#{safeSumList.salMaxTime}"
+						pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+				   
+						
+						
+					<p:calendar id="endMinTime" value="#{safeSumList.endMinTime}"
+						pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>		
+					<p:calendar id="endMaxTime" value="#{safeSumList.endMaxTime}"
+						pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+					
+					
+						
+					<p:inputText id="searchLoanid" value="#{safeSumList.example.loanid}"></p:inputText>
+				<!-- 	
+					<p:calendar id="loanMinrepayday" value="#{safeSumList.loanMinrepayday}"
+						pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+					<p:calendar id="loanMaxrepayday" value="#{safeSumList.loanMaxrepayday}"
+						pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
+					 -->
+						
+					<h:selectOneMenu value="#{safeSumList.example.safestatus}">
+                        <f:selectItem itemLabel="已满标" itemValue="3"/>
+                        <f:selectItem itemLabel="复核中"  itemValue="2"/>
+                        <f:selectItem itemLabel="投资中"  itemValue="1"/>
+                    	<f:selectItem itemLabel="请选择无忧宝状态"/>
+                    </h:selectOneMenu>
+                 <!--    <h:selectOneMenu value="#{safeSumList.example.loanstatus}">
+                        <f:selectItem itemLabel="投资中" itemValue="0"/>
+                        <f:selectItem itemLabel="流标" itemValue="1"/>
+                        <f:selectItem itemLabel="已收益" itemValue="2"/>
+                    	<f:selectItem itemLabel="请选择散标状态"/>
+                    </h:selectOneMenu> -->
+						
+					<p:commandButton process="filters" id="searchBtn" update="dataTable" value="#{commonMsg.searchLabel}"></p:commandButton>
+					<p:commandButton value="#{commonMsg.resetLabel}" onclick="$('#form')[0].reset();$('#form\\:searchBtn').click();"></p:commandButton>
+				</p:panel>
+				<p:watermark for="searchId" value="无忧宝编号"></p:watermark>
+			 	<p:watermark for="searchName" value="无忧宝名称"></p:watermark>
+			 	<p:watermark for="searchDeadline" value="无忧宝期限"></p:watermark>
+			 	<p:watermark for="searchRate" value="收益率"></p:watermark>
+			 	<p:watermark for="searchInvestusername" value="无忧宝投资人"></p:watermark>
+			 	
+			 	<p:watermark for="salMaxTime" value="投资生效时间终"></p:watermark>
+			 	<p:watermark for="salMinTime" value="投资生效时间始"></p:watermark>
+			 	
+			 	<p:watermark for="endMaxTime" value="无忧宝到期日终"></p:watermark>
+			 	<p:watermark for="endMinTime" value="无忧宝到期日始"></p:watermark>
+			 	
+			 	
+			 	
+			 	<p:watermark for="searchLoanid" value="项目编号"></p:watermark>
+			 	
+			 <!-- 	<p:watermark for="loanMaxrepayday" value="散标还款日终"></p:watermark>
+			 	<p:watermark for="loanMinrepayday" value="散标还款日始"></p:watermark> -->
+			 	
+
+				<p:spacer></p:spacer>
+				<p:dataTable id="dataTable" value="#{safeSumList.lazyModel}"
+					var="pro" paginator="true" paginatorPosition="bottom"
+					rows="15" lazy="true" emptyMessage="#{commonMsg.noResultMsg}" 
+					 sortOrder="descending"
+					currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+					paginatorTemplate="#{commonMsg.paginatorTemplate}">
+					
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="无忧宝编号"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.safeLoanId}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="无忧宝名称"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.name}"></h:outputText>
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="无忧宝投资期限"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.deadline}#{pro.unit eq 'day'?'天':'个月'}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="无忧宝年化利率"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.rate}%"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="无忧宝投资人"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.username}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="无忧宝投资金额"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.money}元"></h:outputText>
+					</p:column>
+					
+					<p:column width="300">
+						<f:facet name="header">
+							<h:outputText value="无忧宝投资日期"></h:outputText>
+							
+						</f:facet>
+						<h:outputText value="#{pro.salTime}">
+						</h:outputText>
+					</p:column>
+					<p:column width="240">
+						<f:facet name="header">
+							<h:outputText value="无忧宝状态"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanList.getStautsData(pro.safestatus)}"></h:outputText>
+					</p:column>
+					<p:column width="300">
+						<f:facet name="header">
+							<h:outputText value="无忧宝到期日"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.endTime}"></h:outputText>
+					</p:column>
+					<p:column width="155">
+						<f:facet name="header">
+							<h:outputText value="退还金额"></h:outputText>
+						</f:facet>
+						<ui:fragment rendered="#{pro.type eq 9}"><h:outputText value="#{pro.wtfhmoney}"></h:outputText></ui:fragment>
+						
+					</p:column>
+					<p:column width="300">
+						<f:facet name="header">
+							<h:outputText value="退还日"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.tuihuanri}"></h:outputText>
+					</p:column>
+					<p:column width="155">
+						<f:facet name="header">
+							<h:outputText value="服务费"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.mrfumoney}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="无忧宝利息"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.returnIncome}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="补齐收益"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.mrbqmoney}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="项目编号"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.loanid}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="借款人"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.loanusername}"></h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="借款金额"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.investmoney}">
+					</h:outputText>
+					</p:column>
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="年化利率"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{pro.loanrate*100}">	<f:convertNumber minFractionDigits="1" /></h:outputText>%
+					</p:column>
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="散标还款日"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{safeLoanUserLoanList.finishtime(pro.loanid)}"></h:outputText>
+					</p:column>
+					<p:column width="100">
+						<f:facet name="header">
+							<h:outputText value="投资状态"></h:outputText>
+						</f:facet>
+								<ui:fragment rendered="#{pro.tuihuanri.length()>0}">未投返还</ui:fragment>
+								<ui:fragment rendered="#{pro.tuihuanri.length() eq 0}">
+								<ui:fragment rendered="#{pro.loanstatus eq 0}">
+									投资中
+								</ui:fragment>
+								<ui:fragment rendered="#{pro.loanstatus eq 1}">
+									流标
+								</ui:fragment>
+								<ui:fragment rendered="#{pro.loanstatus eq 2}">
+								已收益
+								</ui:fragment>
+								<ui:fragment rendered="#{pro.loanstatus eq 3}">
+									<!-- 已转让 -->已收益
+								</ui:fragment>
+								</ui:fragment>
+					</p:column>
+					
+					<f:facet name="footer"> 
+						<p:commandButton value="导出Excel" ajax="false">
+							<p:dataExporter target="dataTable" type="xls" 
+								fileName="safeLoanList" pageOnly="false"></p:dataExporter>
+						</p:commandButton>
+	 		        </f:facet>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</ui:define>
+
+</ui:composition>
